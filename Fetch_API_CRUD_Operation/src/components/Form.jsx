@@ -9,7 +9,6 @@ const Form = () => {
 
     const handleSubmitButton = async (e) => {
         e.preventDefault()
-
         const action = e.nativeEvent.submitter.value
 
         if (action === 'Add Comment') {
