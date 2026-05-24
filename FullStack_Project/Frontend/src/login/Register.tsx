@@ -1,7 +1,6 @@
-import { Box, Button, Checkbox, Stack, Typography, TextField, FormControlLabel, FormControl } from "@mui/material"
+import { Box, Button, Checkbox, Stack, Typography, TextField, FormControlLabel, FormControl, FormHelperText } from "@mui/material"
 import GoogleIcon from '@mui/icons-material/Google';
 import { useState } from "react";
-
 
 
 const Register = () => {
@@ -12,9 +11,70 @@ const Register = () => {
         password: '',
         confirmPassword: '',
         phone: '',
-        address: ''
+        address: '',
     })
 
+    const [isCheckedBox, setIsCheckedBox] = useState(false)
+
+    const [error, setError] = useState({
+        fullName: false,
+        email: false,
+        password: false,
+        confirmPassword: false,
+        phone: false,
+        address: false,
+        isCheckedBox: false
+    })
+
+    let isError = {
+        fullName: false,
+        email: false,
+        password: false,
+        confirmPassword: false,
+        phone: false,
+        address: false,
+        isCheckedBox: false
+    }
+
+    const handleCheckBox = () => {
+        setIsCheckedBox(!isCheckedBox)
+    }
+
+
+    const validateInput = () => {
+
+
+        const nameInput = /^[A-Za-z ]*$/;
+        const emailInput = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordInput = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+        const phoneInput = /^[6-9]\d{9}$/;
+
+        if (user.fullName.trim() === '' || !nameInput.test(user.fullName)) {
+            isError.fullName = true
+        }
+        if (user.email.trim() === '' || !emailInput.test(user.email)) {
+            isError.email = true
+        }
+        if (user.password.trim() === '' || !passwordInput.test(user.password)) {
+            isError.password = true
+        }
+        if (user.password !== user.confirmPassword) {
+            isError.confirmPassword = true
+        }
+        if (user.phone.trim() === '' || !phoneInput.test(user.phone)) {
+            isError.phone = true
+        }
+        if (user.address.trim() === '') {
+            isError.address = true
+        }
+        if (isCheckedBox === false) {
+            isError.isCheckedBox = true
+        }
+
+        setError(isError)
+
+        return !Object.values(isError).includes(true)
+    }
 
     const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         const name = event.target.name;
@@ -22,17 +82,23 @@ const Register = () => {
         setUser(data => ({ ...data, [name]: value }))
     }
 
-    const handleFormSubmit = () => {
-      console.log(user);
-      
-        setUser({
-            fullName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            phone: '',
-            address: ''
-        })
+    const handleFormSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault()
+
+        const checkValidate = validateInput();
+
+        if (checkValidate) {
+            alert('You have successfully registered!')
+            setUser({
+                fullName: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                phone: '',
+                address: '',
+            })
+            setIsCheckedBox(false)
+        }
 
     }
 
@@ -113,6 +179,10 @@ const Register = () => {
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4 }}>
                                     <TextField
                                         id='fullName'
+                                        error={error.fullName}
+                                        helperText={
+                                            error.fullName ? 'Only letters and space are allow' : ''
+                                        }
                                         type="text"
                                         name="fullName"
                                         value={user.fullName}
@@ -124,6 +194,10 @@ const Register = () => {
 
                                     <TextField
                                         id="email"
+                                        error={error.email}
+                                        helperText={
+                                            error.email ? 'Please enter valid email' : ''
+                                        }
                                         type="email"
                                         name="email"
                                         value={user.email}
@@ -135,6 +209,10 @@ const Register = () => {
 
                                     <TextField
                                         id="password"
+                                        error={error.password}
+                                        helperText={
+                                            error.password ? 'Password should contain at least one lowercase, one uppercase, one number and one symbol. Minimum length should be 8' : ''
+                                        }
                                         type="password"
                                         name="password"
                                         value={user.password}
@@ -146,6 +224,10 @@ const Register = () => {
 
                                     <TextField
                                         id="confirm-password"
+                                        error={error.confirmPassword}
+                                        helperText={
+                                            error.confirmPassword ? 'Password does not match' : ''
+                                        }
                                         type="password"
                                         name="confirmPassword"
                                         value={user.confirmPassword}
@@ -157,6 +239,10 @@ const Register = () => {
 
                                     <TextField
                                         id="phone"
+                                        error={error.phone}
+                                        helperText={
+                                            error.phone ? 'Enter valid 10 digits contact number' : ''
+                                        }
                                         type="number"
                                         name="phone"
                                         value={user.phone}
@@ -167,6 +253,10 @@ const Register = () => {
                                         color="success" />
                                     <TextField
                                         id="address"
+                                        error={error.address}
+                                        helperText={
+                                            error.address ? 'This field is required' : ''
+                                        }
                                         type="text"
                                         name="address"
                                         value={user.address}
@@ -175,9 +265,16 @@ const Register = () => {
                                         variant="standard"
                                         color="success" />
                                     <FormControlLabel
-                                        control={<Checkbox color="success" />}
+
+                                        control={<Checkbox
+                                            color="success"
+                                            name="isCheckedBox"
+                                            value={isCheckedBox}
+                                            onChange={handleCheckBox} />}
                                         label="I agree all the statement in Term of service"
                                     />
+                                    {error.isCheckedBox && <FormHelperText sx={{ color: 'red' }}>You must agree to continue.</FormHelperText>}
+
                                     <Button
                                         variant="contained"
                                         onClick={handleFormSubmit}
