@@ -1,0 +1,60 @@
+.header-appbar{
+    background-color: #053348!important;
+    padding: 7px !important;
+    color: white !important;
+    font-weight: bold !important;
+}
+
+.navbar-toolbar{
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.navbar-button-box{
+    display: flex;
+    gap: 15px;
+}
+
+.navbar-button {
+    text-transform: none !important;
+    color: white !important;
+    gap: 10px !important;
+    font-size: 20px !important;
+}
+
+.home-container{
+    color: #053348 !important;
+    width: 100%;
+    height: 100vh;
+    display: flex !important;
+    margin-top: 100px;
+}
+
+.home-left, .home-right{
+    width: 50%;
+    height: 80vh;
+    padding: 25px;
+}
+
+.home-left{
+    padding: 25px !important;
+}
+
+.home-left-heading{
+    font-weight: bold !important;
+    margin-top: 100px !important;
+    font-size: 80px !important;
+}
+
+.home-left-body{
+    margin-top: 15px !important;
+    font-size: 20px !important;
+}
+
+.home-right{
+    background-image: url('../assets/image.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
