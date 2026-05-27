@@ -1,5 +1,5 @@
 import {Client} from 'pg'
-import { tableCreation } from './tableCreation.js';
+import { tableCreation } from './userData.js';
 
 export const connection=new Client({
     host:'localhost',

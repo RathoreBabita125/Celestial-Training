@@ -3,11 +3,11 @@ import { connection } from "./connection.js";
 export const tableCreation=async()=>{
     await connection.query(`
         create table if not exists userProfile(
-            fullName varchar(50),
-            email varchar(100) unique not null,
-            password varchar(50),
+            fullName varchar(250),
+            email varchar(250) unique not null,
+            password varchar(250),
+            role varchar(250)
             phone bigint,
-            address varchar(250)
         )`, (err)=>{
             if(!err){
                 console.log('Table is created successfully.')

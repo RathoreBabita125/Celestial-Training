@@ -140,6 +140,17 @@ const Signup = () => {
                                     required
                                     color="success" />
                                 <TextField
+                                    id="role"
+                                    error={error.role}
+                                    helperText={error.role ? 'This field is required' : ''}
+                                    type="text"
+                                    name="address"
+                                    value={user.role}
+                                    onChange={handleInput}
+                                    label="Role"
+                                    variant="standard"
+                                    color="success" />
+                                <TextField
                                     id="password"
                                     error={error.password}
                                     helperText={error.password ? 'Password should contain at least one lowercase, one uppercase, one number and one symbol. Minimum length should be 8' : ''}
@@ -174,17 +185,6 @@ const Signup = () => {
                                     label="Phone"
                                     variant="standard"
                                     required
-                                    color="success" />
-                                <TextField
-                                    id="address"
-                                    error={error.address}
-                                    helperText={error.address ? 'This field is required' : ''}
-                                    type="text"
-                                    name="address"
-                                    value={user.address}
-                                    onChange={handleInput}
-                                    label="Address"
-                                    variant="standard"
                                     color="success" />
                                 <FormControlLabel
                                     control={<Checkbox
