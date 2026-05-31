@@ -1,0 +1,105 @@
+html, body{
+    overflow-x: hidden;
+}
+.dashboard-navbar{
+    width: 100% !important;
+    height: 10vh;
+    background-color: white !important;
+    padding: 10px !important;
+    box-shadow: none !important;
+    border: 1px solid #bcbfc1;
+}
+.dashboard-navbar-box{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 22.5rem;
+}
+.dashboard-toolbar{
+    width: 100% !important;
+}
+.dashboard-navbar-items{
+    align-items: center;
+    justify-content: space-between;
+    width: 95% !important;
+    display: flex;
+    padding: 10px;
+    gap: 40px;
+}
+.dashboard-navbar-text, .dashboard-navbar-input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+.dashboard-toolbar Button{
+    color: #053348 !important;
+    font-weight: 500;
+    text-transform: none;
+    font-size: 18px;
+}
+.sidebar{
+    width: 20%;
+    height: 100vh;
+    color: #053348 !important;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.sidebar-box{
+    width: 80%;
+    height: 80vh;
+    padding: 35px;
+}
+.sidebar-typo{
+    cursor: pointer;
+    font-size: 25px !important;
+}
+.dash-side-link{
+    text-decoration: none !important;
+    color: #053348;
+}
+.dash-project-section{
+    position: absolute !important;
+    top: 2px !important;
+    right: 10px !important;
+}
+.sidebar .logout-button{
+    padding: 25px;
+    font-size: 30px;
+    cursor: pointer !important;
+}
+.task-section{
+    color: #053348 !important;
+    padding: 20px !important;
+}
+.task-status{
+    margin-top: 10rem;
+    background-color: white !important;
+    color: #053348 !important;
+    border-radius: 7px;
+    padding: 10px;
+    width: 90% !important;
+}
+.task-status Button{
+    text-transform: none !important;
+    color: #053348;
+    font-size: 18px;
+}
+.dash-home-page{
+    color: #053348;
+}
+.dash-card{
+    width: 250px !important;
+    text-align: center !important;
+    color: #053348 !important;
+}
+.dash-outlet{
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-left: 38%;
+    margin-top: 16.5vh;
+}
+
+
