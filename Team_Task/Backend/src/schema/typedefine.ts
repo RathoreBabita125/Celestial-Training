@@ -1,6 +1,13 @@
 import { gql } from "graphql-tag";
 
 export const typeDefs=gql`
+
+    enum UserStatus{
+        ACTIVE
+        INACTIVE
+        BLOCKED
+    }
+    scalar Date
     type User{
         id: ID!
         fullName: String!
@@ -9,13 +16,21 @@ export const typeDefs=gql`
         confirmPassword:String!
         role:String!
         phone:ID!
+        status:UserStatus!
+        createdAt:Date!
+        updatedAt:Date!
+        deletedAt:Date
     }
     type Project{
         id: ID!
         title: String!
+        projectManager:String!
+        engineers:[String!]
         description:String!
         status:String!
-        message:String
+        priority:String!
+        startDate:Date!
+        endDate:Date!
     }
     type Task{
         id: ID!
@@ -23,15 +38,21 @@ export const typeDefs=gql`
         description:String!
         status:String!
         message:String
+        user:User
+        project:Project
     }
     type AuthResponse{
+        user:User
         token:String
-        email:String
-        message:String
     }
     type Query{
         users:[User]
-        projects:[Project]
+        projects(
+            title:String
+            status:String
+            priority:String
+            projectManager:String
+        ):[Project]
         tasks:[Task]
     }
     type Mutation{
@@ -50,24 +71,57 @@ export const typeDefs=gql`
             password:String!    
         ):AuthResponse
 
-        forgot(
+        forget(
             email:String!
-            password:String   
+            password:String!
+            confirmPassword:String!
         ):AuthResponse
       
         logout:String!  
 
+        authWithGoogle(
+            token:String!
+        ):AuthResponse
+
+        addUser(
+            id:ID
+            fullName:String!
+            email:String!
+            password:String!
+            role:String!
+            phone:ID!
+        ):AuthResponse
+
+        updateUser(
+            id:ID
+            fullName:String!
+            email:String!
+            password:String!
+            role:String!
+            phone:ID!
+        ):AuthResponse
+
+        deleteUser(
+            id:ID
+        ):AuthResponse
+
         createProject(
             title:String!
             description:String!
+            projectManager:String!
+            engineers:[String!]
             status:String!
+            priority:String!
+            startDate:Date!
+            endDate:Date!
         ):Project
 
         updateProject(
-            id:ID!
-            title:String!
-            description:String!
-            status:String!
+            id:ID
+            title:String
+            description:String
+            status:String
+            priority:String
         ):Project
 
         deleteProject(
@@ -95,4 +149,4 @@ export const typeDefs=gql`
             id:ID!
         ):Task
     }
-`
+`;

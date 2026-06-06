@@ -1,8 +1,7 @@
-import { Box, Stack } from "@mui/material"
-import DashNavbar from "./Navbar"
-import DashSidebar from "./Sidebar"
-import { Outlet } from "react-router-dom"
-
+import { Box, Stack } from "@mui/material";
+import DashNavbar from "./Navbar";
+import DashSidebar from "./Sidebar";
+import { Outlet } from "react-router-dom";
 
 const Dashboard = () => {
     return (
@@ -13,7 +12,7 @@ const Dashboard = () => {
                     <Box className="dashboard-navbar-box">
                         <DashNavbar />
                     </Box>
-                    <Box className="dash-outlet">
+                    <Box className="dash-outlet" >
                         <Outlet/>  
                     </Box>
                 </Box>
@@ -21,5 +20,4 @@ const Dashboard = () => {
         </>
     )
 }
-
-export default Dashboard
+export default Dashboard;

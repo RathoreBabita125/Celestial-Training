@@ -26,7 +26,6 @@ const Home = () => {
                             whether you are working alone or part of a team.</Typography>
                     </Box>
                     <Box className='home-right'>
-
                     </Box>
                 </Stack>
             </Box>

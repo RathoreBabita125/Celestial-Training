@@ -11,7 +11,14 @@ import Activity from "./pages/dashboard/Activity";
 import Message from "./pages/dashboard/Message";
 import Task from "./pages/dashboard/Task";
 import Team from "./pages/dashboard/Team";
-import Inbox from "./pages/dashboard/Inbox";
+// import Inbox from "./pages/dashboard/Inbox";
+import CreateTask from "./pages/tasks/CreateTask";
+import ViewTask from "./pages/tasks/ViewTask";
+import EditTask from "./pages/tasks/EditTask";
+import DeleteTask from "./pages/tasks/DeleteTask";
+import UserManagement from "./pages/dashboard/UserManagement";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
 
 const router = createBrowserRouter([
   {
@@ -26,12 +33,12 @@ const router = createBrowserRouter([
         element:<Dashboard/>,
         children:[
           {
-            path:'dashhome',
+            path:'',
             element:<DashHome/>
           },
           {
-            path:'inbox',
-            element:<Inbox/>
+            path:'usermanagement',
+            element:<UserManagement/>
           },
           {
             path:'project',
@@ -39,7 +46,25 @@ const router = createBrowserRouter([
           },
           {
             path:'task',
-            element:<Task/>
+            element:<Task/>,
+            children:[
+              {
+                path:'createtask',
+                element:<CreateTask/>
+              },
+              {
+                path:'deletetask',
+                element:<DeleteTask/>
+              },
+              {
+                path:'edittask',
+                element:<EditTask/>
+              },
+              {
+                path:'viewtask',
+                element:<ViewTask/>
+              },
+            ]
           },
           {
             path:'team',
@@ -73,16 +98,16 @@ const router = createBrowserRouter([
       },
     ]
   }
-])
-
+]);
 
 function App() {
-
   return (
+    <>
     <RouterProvider router={router}>
     </RouterProvider>
+     <ToastContainer />
+
+    </>
   )
-
-}
-
-export default App
+};
+export default App;

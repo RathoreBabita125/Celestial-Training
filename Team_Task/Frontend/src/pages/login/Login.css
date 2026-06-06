@@ -33,8 +33,9 @@
     font-weight: bold !important;
     font-size: 80px !important;
     color:white !important;
+    word-spacing: -10px !important;
+    line-height: 1 !important;
 }
-
 .register-right-section{
     width: 50%;
     height: 80vh;
@@ -94,9 +95,7 @@
     }
     .register-box-line{
         width: 50px;
-    }
-
-    
+    }    
 }
 
 @media screen and (max-width:768px){

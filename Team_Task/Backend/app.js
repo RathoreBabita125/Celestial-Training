@@ -8,10 +8,12 @@ import cors from 'cors';
 import { ApolloServer } from "@apollo/server";
 import { resolvers } from "./src/resolvers/resolver.js";
 import { typeDefs } from "./src/schema/typedefine.js";
+
 dotenv.config();
 const PORT = process.env.PORT;
 const app = express();
 app.use(cors());
+
 export const AppDataSource = new DataSource({
     host: 'localhost',
     username: 'postgres',

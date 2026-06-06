@@ -1,0 +1,1 @@
+export const settings = ['Profile', 'Dashboard', 'Logout'];

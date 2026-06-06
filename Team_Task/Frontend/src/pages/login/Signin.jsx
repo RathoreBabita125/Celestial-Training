@@ -1,15 +1,18 @@
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
-import './Login.css';
 import { Link, useNavigate } from "react-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import { LOGIN } from "../../query/query";
+import './Login.css';
+import { AuthContext } from "../../context/AuthContext";
 
+import { toast } from "react-toastify";
+import { validateField } from "../../common/formFieldValidate";
 
 const Signin = () => {
-
-    const navigate=useNavigate()
+    const { setLoginUserData } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [user, setUser] = useState({
         email: "",
         password: ""
@@ -18,59 +21,72 @@ const Signin = () => {
         email: "",
         password: ""
     });
-    const[newErrorMessage, setNewErrorMessage]=useState("")
-    const [loginData]=useMutation(LOGIN)
-    
-    const validateLoginInput = () => {
-        const newError={};
-        const emailInput = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const passwordInput = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    const [newErrorMessage, setNewErrorMessage] = useState("");
+    const [loginData] = useMutation(LOGIN);
 
-        //email
-        if(!user.email || user.email.trim()===""){
-            newError.email="This field is required";
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        const latestUser = { ...user, [name]: value }
+        const errorMsg = validateField(name, value, latestUser);
+        setError((prev) => ({ ...prev, [name]: errorMsg }));
+    };
+
+    // onChange 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        const updatedUser = { ...user, [name]: value }
+        setUser(updatedUser);
+
+        if (error[name] !== '') {
+            const errorMsg = validateField(name, value, updatedUser);
+            setError((prev) => ({ ...prev, [name]: errorMsg }));
         }
-        else if(!emailInput.test(user.email)){
-            newError.email="Please provide valid email";
-        }
+    };
 
-        //password
-        if(!user.password || user.password.trim()===""){
-            newError.password="This field is required";
-        }
-        else if(!passwordInput.test(user.password)){
-            newError.password="Please enter valid password";
-        }    
-        setError(newError);
+    //validate input
+    const validateInput = () => {
+        const fields = ['fullName', 'email', 'role', 'password', 'confirmPassword', 'phone'];
+        const newErrors = {};
+        let isValid = true;
 
-        return Object.keys(newError).length===0
-    }
+        fields.forEach((field) => {
+            const errorMsg = validateField(field, user[field]);
+            newErrors[field] = errorMsg;
+            if (errorMsg) isValid = false;
+        });
+        setError(newErrors);
+        return isValid;
+    };
 
-    const inputHandler = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setUser((data) => ({ ...data, [name]: value }));
-    }
+    const isFormValid =
+        user.email.trim() !== "" &&
+        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i.test(user.email) &&
+        user.password.length >= 8;
 
-    const loginButtonHandler = async(event) => {
+    const loginButtonHandler = async (event) => {
         event.preventDefault();
-        const checkValidates=validateLoginInput(); 
-        if(!checkValidates){
-            setNewErrorMessage("Please enter valid email or password")
+        const checkValidates = validateInput();
+        if (!checkValidates) {
+            setNewErrorMessage("Please enter valid email or password");
         }
         try {
-            const userData=await loginData({
-                variables:{
-                    email:user.email,
-                    password:user.password
+            const response = await loginData({
+                variables: {
+                    email: user.email,
+                    password: user.password
                 }
-            })
-            setNewErrorMessage("")
-            navigate('/dashboard')
-            console.log(userData);              
+            });
+            if (response) {
+                toast.success("Successfully logged in.");
+                navigate('/dashboard');
+                setLoginUserData(response.data.login.user);
+            }
+            console.log(response);
+
         } catch (error) {
-            setNewErrorMessage(error.message)
-        }
+           console.log(error);
+           toast.error(error.message);
+        };
     }
     return (
         <>
@@ -87,9 +103,10 @@ const Signin = () => {
                                 type="email"
                                 name="email"
                                 error={error.email}
-                                helperText={error?.email ? error.email:''}
+                                helperText={error?.email ? error.email : ''}
                                 value={user.email}
-                                onChange={inputHandler}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
                                 label="Email"
                                 variant="standard"
                                 color="success" />
@@ -97,17 +114,22 @@ const Signin = () => {
                                 type="password"
                                 name="password"
                                 error={error.password}
-                                helperText={error?.password ? error.password:''}
+                                helperText={error?.password ? error.password : ''}
                                 value={user.password}
-                                onChange={inputHandler}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
                                 label="Password"
                                 variant="standard"
                                 color="success" />
                             <Stack direction={'row'} sx={{ justifyContent: 'space-between', marginTop: 2, textAlign: 'center' }}>
-                                <Link to='/forget'><Typography sx={{ cursor: 'pointer', color: '#0533482' }}>Forgot password?</Typography></Link>
+                                <Link to='/forget'><Typography sx={{ cursor: 'pointer', color: '#053348' }}>Forgot password?</Typography></Link>
                             </Stack>
-                            <Button variant="contained" className="login-button" onClick={loginButtonHandler}>Sign in</Button>
-                            {newErrorMessage && <Typography variant="body1" sx={{marginTop:2, color:'red'}}>{newErrorMessage}</Typography>}
+                            <Button     
+                                variant="contained" 
+                                className="login-button" 
+                                onClick={loginButtonHandler}
+                                disabled={!isFormValid}
+                            >Sign in</Button>
                             <Stack direction={'row'} spacing={1} sx={{ margin: '0 auto', alignItems: 'center', marginTop: 1 }}>
                                 <Box className='login-box-line'></Box>
                                 <Typography> Or </Typography>

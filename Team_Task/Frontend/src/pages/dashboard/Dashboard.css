@@ -1,7 +1,8 @@
-html, body{
+html,
+body {
     overflow-x: hidden;
 }
-.dashboard-navbar{
+.dashboard-navbar {
     width: 100% !important;
     height: 10vh;
     background-color: white !important;
@@ -9,16 +10,17 @@ html, body{
     box-shadow: none !important;
     border: 1px solid #bcbfc1;
 }
-.dashboard-navbar-box{
+.dashboard-navbar-box {
+    z-index: 10 !important;
     position: fixed;
     top: 0;
     right: 0;
-    left: 22.5rem;
+    left: 25.5rem;
 }
-.dashboard-toolbar{
+.dashboard-toolbar {
     width: 100% !important;
 }
-.dashboard-navbar-items{
+.dashboard-navbar-items {
     align-items: center;
     justify-content: space-between;
     width: 95% !important;
@@ -26,19 +28,20 @@ html, body{
     padding: 10px;
     gap: 40px;
 }
-.dashboard-navbar-text, .dashboard-navbar-input{
+.dashboard-navbar-text,
+.dashboard-navbar-input {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
 }
-.dashboard-toolbar Button{
+.dashboard-toolbar Button {
     color: #053348 !important;
     font-weight: 500;
     text-transform: none;
     font-size: 18px;
 }
-.sidebar{
+.sidebar {
     width: 20%;
     height: 100vh;
     color: #053348 !important;
@@ -47,59 +50,164 @@ html, body{
     top: 0;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-.sidebar-box{
+.sidebar-box {
     width: 80%;
     height: 80vh;
     padding: 35px;
 }
-.sidebar-typo{
+.sidebar-typo {
     cursor: pointer;
     font-size: 25px !important;
 }
-.dash-side-link{
+.dash-side-link {
     text-decoration: none !important;
     color: #053348;
 }
-.dash-project-section{
-    position: absolute !important;
-    top: 2px !important;
-    right: 10px !important;
-}
-.sidebar .logout-button{
+.sidebar {
     padding: 25px;
     font-size: 30px;
     cursor: pointer !important;
 }
-.task-section{
+.task-section {
     color: #053348 !important;
     padding: 20px !important;
+    margin-top: 10px !important;
+    margin-left: 15rem !important;
 }
-.task-status{
+.task-status {
     margin-top: 10rem;
     background-color: white !important;
     color: #053348 !important;
     border-radius: 7px;
     padding: 10px;
-    width: 90% !important;
+    width: 60% !important;
+    margin-top: 20rem !important;
 }
-.task-status Button{
+.task-status Button {
     text-transform: none !important;
     color: #053348;
     font-size: 18px;
 }
-.dash-home-page{
+.dash-home-page {
     color: #053348;
 }
-.dash-card{
+.dash-card {
     width: 250px !important;
     text-align: center !important;
     color: #053348 !important;
 }
-.dash-outlet{
+.dash-outlet {
+    width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    margin-left: 38%;
+    margin-left: 45%;
     margin-top: 16.5vh;
 }
+.dash-user-show{
+    width: 40% !important;
+    align-items: center;
+    padding: 25px;
+}
+.dash-user-coloumn {
+    font-family: 20px !important;
+    background-color: #013343 !important;
+}
+.user-table-column {
+    font-size: 20px !important;
+    color: white !important;
+    border: 1px solid white;
+}
+.dash-project-section {
+    color: #053348 !important;
+    margin-left: 5px;
+    width: 65vw;
+    padding: 10px;
+    border: none !important;
+}
+.dash-project-section .project-btn {
+    background-color: #053348 !important;
+    color: white !important;
+    font-size: 20px !important;
+    margin-top: 60px;
+}
+.dash-project-details {
+    padding: 20px;
+    margin-top: 50px !important;
+    gap: 20px !important;
+    display: flex;
+    flex-direction: column;
+}
+.project-textfield {
+    width: 35% !important;
+}
+.dash-view-projects {
+    margin-top: 20px;
+    color: #053348;
+}
+.dash-editing-project {
+    display: flex !important;
+    border: 2px solid black;
+    justify-content: center !important;
+    align-items: center !important;
+}
+.dash-task-creation {
+    margin-left: 12rem;
+    margin-top: 10rem;
+}
+.task-textfield {
+    width: 100%;
+}
+.dash-teamuser-section {
+    position: absolute;
+    left: 30rem;
+    color: #053348 !important;
+    font-size: 18px !important;
+    width: 70% !important;
+}
+.team-table-row {
+    font-size: 18px !important;
+    color: #053348 !important;
+    border: 1px solid #053348;
+}
 
+.view-task-section {
+    width: 100% !important;
+    padding: 2rem !important;
+    margin-top: 5rem !important;
+}
+.dash-task-delete {
+    margin-top: 12rem !important;
+    margin-left: 2rem !important;
+}
+.dash-edit-task {
+    margin-top: 12rem !important;
+}
+.project-section {
+    width: 70%;
+    position: absolute;
+    left: 30rem;
+    color: #053348 !important;
+    font-size: 18px !important;
+}
+.project-table {
+    padding: 20px !important;
+}
+.project-table-column {
+    font-size: 20px !important;
+    color: #053348 !important;
+    font-weight: bold !important;
+    border: 1px solid rgb(189, 183, 183);
+}
+.project-column-data {
+    text-align: center;
+}
+.project-table-row {
+    font-size: 18px !important;
+    color: #053348 !important;
+    border: 1px solid rgb(189, 183, 183);
+}
+.project-table-body {
+    gap: 50px !important;
+    padding: 20px !important;
+}
 

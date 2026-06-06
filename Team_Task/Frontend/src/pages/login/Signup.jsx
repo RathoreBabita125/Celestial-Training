@@ -1,90 +1,103 @@
-import { Box, Button, Stack, Typography, TextField, FormControl } from "@mui/material";
+import { Box, Button, Stack, Typography, TextField, FormControl, InputAdornment, Select, MenuItem, FormHelperText, IconButton } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { useState } from "react";
 import { Link } from "react-router";
-import {useMutation} from '@apollo/client/react';
+import { useMutation } from '@apollo/client/react';
 import './Login.css';
 import { SIGNUP } from "../../query/query";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { toast } from 'react-toastify';
+import { validateField } from "../../common/formFieldValidate";
+
 
 const Signup = () => {
+
     const [user, setUser] = useState({
         fullName: '',
         email: '',
         role: '',
         password: '',
         confirmPassword: '',
-        phone: '',
+        phone: ''
     });
     const [error, setError] = useState({
-        fullName: false,
-        email: false,
-        role: false,
-        password: false,
-        confirmPassword: false,
-        phone: false,
+        fullName: '',
+        email: '',
+        role: '',
+        password: '',
+        confirmPassword: '',
+        phone: ''
     });
-    const[newError, setNewError]=useState("");
-    const[signupData]=useMutation(SIGNUP);
-    const[successMessage, setSuccessMessage]=useState("")
+    const [showVisible, setShowVisible] = useState(false);
+    const [signupData] = useMutation(SIGNUP);
 
+    // field validation
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        const latestUser = { ...user, [name]: value }
+        const errorMsg = validateField(name, value, latestUser);
+        setError((prev) => ({ ...prev, [name]: errorMsg }));
+    };
+
+    // onChange 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        const updatedUser = { ...user, [name]: value }
+        setUser(updatedUser);
+
+        if (error[name] !== '') {
+            const errorMsg = validateField(name, value, updatedUser);
+            setError((prev) => ({ ...prev, [name]: errorMsg }));
+        }
+    };
+
+    //validate input
     const validateInput = () => {
-        const nameInput = /^[A-Za-z ]*$/;
-        const emailInput = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const passwordInput = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-        const phoneInput = /^[6-9]\d{9}$/;
+        const fields = ['fullName', 'email', 'password', 'confirmPassword', 'role', 'phone'];
+        const newErrors = {};
+        let isValid = true;
 
-        if (user.fullName?.trim() === '' || !nameInput.test(user.fullName)) {
-            setError((preData) => ({ ...preData, fullName: true }));
-        }
-        else if (user.email?.trim() === '' || !emailInput.test(user.email)) {
-            setError((preData) => ({ ...preData, fullName: false,  email: true }));
-        }
-        else if (user.role?.trim() === '') {
-            setError((preData) => ({ ...preData, email: false, role: true }));
-        }
-        else if (user.password?.trim() === '' || !passwordInput.test(user.password)) {
-            setError((preData) => ({ ...preData, role: false, password: true }));
-        }
-        else if (user.confirmPassword==='' || user.password !== user.confirmPassword) {
-            setError((preData) => ({ ...preData, password: false, confirmPassword: true }));
-        }
-        else if (user.phone?.trim() === '' || !phoneInput.test(user.phone)) {
-            setError((preData) => ({ ...preData, confirmPassword: false , phone: true }));
-        }
-        else{
-            setError((preData) => ({ ...preData, phone: false }));
-        }
-        return !Object.values(error).includes(true);
-    }
+        fields.forEach((field) => {
+            const errorMsg = validateField(field, user[field], user);
+            newErrors[field] = errorMsg;
+            if (errorMsg) isValid = false;
+        });
+        setError(newErrors);
+        return isValid;
+    };
 
-    const handleInput = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setUser(data => ({ ...data, [name]: value }));
-    }
+    const isFormValid =
+        user.fullName.trim() !== "" &&
+        user.email.trim() !== "" &&
+        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i.test(user.email) &&
+        user.password.length >= 8 &&
+        user.confirmPassword === user.password &&
+        user.role !== "" &&
+        user.phone.trim() !== ""&&
+        /^[6-9]\d{9}$/.test(user.phone);
 
-    const handleFormSubmit = async(event) => {
-        event.preventDefault();
+    const handleFormSubmit = async (event) => {
         const checkValidate = validateInput();
-
-        if (!checkValidate) {            
-            setNewError("Invalid Credentials. Try again");
+        event.preventDefault();
+        if (!checkValidate) {
+            return;
         }
         try {
-            const response= await signupData({
-                variables:{
-                    fullName:user.fullName,
-                    email:user.email,
-                    password:user.password,
-                    confirmPassword:user.confirmPassword,
-                    role:user.role,
-                    phone:user.phone
+            const response = await signupData({
+                variables: {
+                    fullName: user.fullName,
+                    email: user.email,
+                    password: user.password,
+                    confirmPassword: user.confirmPassword,
+                    role: user.role,
+                    phone: user.phone
                 }
             });
-            if(response){
-                setSuccessMessage(`Congratulation! ${user.fullName}.You have successfully registered.`)
+            if (response) {
+                toast.success("You have successfully signed up.")
             }
-            console.log(response)
+            console.log(response);
             setUser({
                 fullName: '',
                 email: '',
@@ -92,16 +105,12 @@ const Signup = () => {
                 confirmPassword: '',
                 phone: '',
                 role: '',
-            })                      
+            });
         } catch (error) {
-            setNewError(error.graphQLErrors?.[0]?.message || error.message)
+            console.log(error);
+            toast.error(`${error.message} Please try again`)
         }
     }
-
-    const showMessage = newError 
-                        ? 
-                            <Typography variant="h6" color="d" sx={{marginTop:2}}>{newError.message}</Typography>
-                        :   <Typography variant="h6" sx={{marginTop:2}}>{successMessage} </Typography>;
 
     return (
         <>
@@ -109,9 +118,8 @@ const Signup = () => {
                 <Box className='register-parent'>
                     <Box className='register-left-section'>
                         <Box className='register-left'>
-                            <Typography className="register-left-typo">Welcome</Typography>
-                            <Typography className="register-left-typo">Task Management</Typography>
-                            <Typography variant="body1" color="initial">
+                            <Typography className="register-left-typo">Project Management System</Typography>
+                            <Typography variant="body1" color="initial" sx={{ marginTop: 2, fontSize: 18 }}>
                                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta natus fugit commodi aliquid nesciunt omnis?
                             </Typography>
                         </Box>
@@ -127,11 +135,12 @@ const Signup = () => {
                                 <TextField
                                     id='fullName'
                                     error={error.fullName}
-                                    helperText={error.fullName && newError ? 'Only letters and space are allow' : ''}
+                                    helperText={error.fullName ? error.fullName : ''}
                                     type="text"
+                                    onBlur={handleBlur}
                                     name="fullName"
                                     value={user.fullName}
-                                    onChange={handleInput}
+                                    onChange={handleChange}
                                     label="Full Name"
                                     variant="standard"
                                     required
@@ -139,72 +148,114 @@ const Signup = () => {
                                 <TextField
                                     id="email"
                                     error={error.email}
-                                    helperText={error.email && newError ? 'Please enter valid email' : ''}
+                                    helperText={error.email ? error.email : ''}
                                     type="email"
+                                    onBlur={handleBlur}
                                     name="email"
                                     value={user.email}
-                                    onChange={handleInput}
+                                    onChange={handleChange}
                                     label="Email"
-                                    variant="standard"
-                                    required
-                                    color="success" />
-                                <TextField
-                                    id="role"
-                                    error={error.role}
-                                    helperText={error.role && newError ? 'This field is required' : ''}
-                                    type="text"
-                                    name="role"
-                                    value={user.role}
-                                    onChange={handleInput}
-                                    label="Role"
                                     variant="standard"
                                     required
                                     color="success" />
                                 <TextField
                                     id="password"
                                     error={error.password}
-                                    helperText={error.password && newError ? 'Password should contain at least one lowercase, one uppercase, one number and one symbol. Minimum length should be 8' : ''}
-                                    type="password"
+                                    helperText={error.password ? error.password : ''}
+                                    type={showVisible.password ? 'text' : 'password'}
                                     name="password"
+                                    onBlur={handleBlur}
                                     value={user.password}
-                                    onChange={handleInput}
+                                    onChange={handleChange}
                                     label="Password"
                                     required
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, password: !pre.password }))}>
+                                                        {showVisible.password ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    }}
                                     variant="standard"
                                     color="success" />
                                 <TextField
                                     id="confirm-password"
                                     error={error.confirmPassword}
-                                    helperText={error.confirmPassword && newError ? 'Password does not match' : ''}
-                                    type="password"
+                                    helperText={error.confirmPassword ? error.confirmPassword : ''}
+                                    type={showVisible.confirmPassword ? 'text' : 'password'}
+                                    onBlur={handleBlur}
                                     name="confirmPassword"
                                     value={user.confirmPassword}
-                                    onChange={handleInput}
+                                    onChange={handleChange}
                                     label="Confirm Password"
-                                    variant="standard"
                                     required
-                                    color="success" />
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, confirmPassword: !pre.confirmPassword }))}>
+                                                        {showVisible.confirmPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    }}
+                                    variant="standard"
+                                    color="success"
+                                />
+                                <FormControl error={!!error.role} sx={{ mt: 2 }} fullWidth>
+                                    <Select
+                                        sx={{ mt: 1 }}
+                                        variant="standard"
+                                        name="role"
+                                        value={user.role}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={handleBlur}
+                                        displayEmpty
+                                        error={error.role}
+                                        label="Role *"
+                                        color="success"
+                                    >
+                                        <MenuItem value="" disabled >Role *</MenuItem>
+                                        <MenuItem value="Admin">Admin</MenuItem>
+                                        <MenuItem value="Project Manager">Project Manager</MenuItem>
+                                        <MenuItem value="Engineer">Engineer</MenuItem>
+                                    </Select>
+                                    <FormHelperText>{error.role ? error.role : ''}</FormHelperText>
+                                </FormControl>
                                 <TextField
                                     id="phone"
                                     error={error.phone}
-                                    helperText={error.phone && newError ? 'Enter valid 10 digits contact number' : ''}
+                                    helperText={error.phone ? error.phone : ''}
                                     type="number"
                                     name="phone"
                                     value={user.phone}
-                                    onChange={handleInput}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
                                     label="Phone"
                                     variant="standard"
-                                    required
-                                    color="success" />
-                                <Button className="register-signup-button" variant="contained" onClick={handleFormSubmit}>Sign Up</Button>
-                                <div>{showMessage}</div>
+                                    color="success"
+                                />
+                                <Button
+                                    className="register-signup-button"
+                                    variant="contained"
+                                    onClick={handleFormSubmit}
+                                    disabled={!isFormValid}
+                                >
+                                    Sign Up
+                                </Button>
                                 <Stack direction={'row'} spacing={1} className="register-signup">
                                     <Box className='register-box-line'></Box>
                                     <Typography> Sign up with </Typography>
                                     <Box className='register-box-line'></Box>
                                 </Stack>
                                 <Stack direction={'row'} spacing={1} sx={{ margin: '0 auto', marginTop: 1 }}>
-                                    <Button className="register-with-google" variant="outlined" color="success"><GoogleIcon sx={{ color: '#174a62' }} /></Button>
+                                    <Button className="register-with-google" variant="outlined" color="success"><GoogleIcon sx={{ color: '#053348' }} /></Button>
                                 </Stack>
                             </Box>
                         </FormControl>
@@ -212,6 +263,6 @@ const Signup = () => {
                 </Box>
             </Box>
         </>
-    )
-}
-export default Signup
+    );
+};
+export default Signup;

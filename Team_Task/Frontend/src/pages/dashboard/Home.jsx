@@ -1,13 +1,19 @@
-import { Box} from '@mui/material'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import CardComp from './reusable/Card'
+import { Box} from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import CardComp from '../../common/Card';
 
 const DashHome = () => {
+
+    const { loginUserData} = useContext(AuthContext);
+    
+
     return (
         <>
             <Box className='dash-home-page'>
-                <Typography variant='h2' sx={{ fontWeight: 'bold', marginBottom:7}}>Welcome Babita</Typography>
+                <Typography variant='h2' sx={{ fontWeight: 'bold', marginBottom:7}}>Welcome {loginUserData.fullName}</Typography>
                 <Stack spacing={5}>
                     <Typography variant='h5'>Here are the details of your projects and tasks.</Typography>
                     <Typography variant='h5' sx={{ fontWeight: 'bold' }}>Projects Details:</Typography>
@@ -31,4 +37,4 @@ const DashHome = () => {
         </>
     )
 }
-export default DashHome
+export default DashHome;

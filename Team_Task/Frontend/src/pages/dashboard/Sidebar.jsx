@@ -1,5 +1,6 @@
-import { Box, Stack, Typography } from "@mui/material"
-import MailIcon from '@mui/icons-material/Mail';
+import Typography from '@mui/material/Typography'
+import { Box, Button, Stack } from "@mui/material";
+// import MailIcon from '@mui/icons-material/Mail';
 import FolderIcon from '@mui/icons-material/Folder';
 import TaskIcon from '@mui/icons-material/Task';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -9,42 +10,65 @@ import GroupIcon from '@mui/icons-material/Group';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import LogoutIcon from '@mui/icons-material/Logout';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useMutation } from "@apollo/client/react";
+import { LOGOUT } from "../../query/query";
+import PersonIcon from '@mui/icons-material/Person';
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+
 
 const DashSidebar = () => {
+    // const navigate=useNavigate();
+    // const [logout]=useMutation(LOGOUT);
+
+     const { loginUserData } = useContext(AuthContext);
+
+    // const handleLogoutBTN=async()=>{
+    //     try {
+    //         await logout();
+    //         navigate("/");            
+    //     } catch (error) {
+    //         console.log(error);   
+    //     };
+    // };
+
     return (
         <>
             <Box className="sidebar">
                 <Stack direction={'column'} spacing={4} className="sidebar-box">
-                    <Stack direction={'row'} spacing={2} >
-                        <Typography variant='h5' className="sidebar-typo" sx={{ fontWeight: 'bold' }}>Teamtask</Typography>
+                    <Stack >
+                        <Typography variant='h5' className="sidebar-typo" sx={{ fontWeight: 'bold' }}>ProjectHub</Typography>
                     </Stack>
-                    <Link to='/dashboard/dashhome' className="dash-side-link" >
+                    <Link to='/dashboard' className="dash-side-link" >
                         <Stack direction={'row'} spacing={2} className="sidebar-typo" sx={{mt:5}}>
                             <DashboardRoundedIcon />
                             <Typography variant="body1">Dashboard</Typography>
                         </Stack>
                     </Link>
-                    <Link to='/dashboard/inbox' className="dash-side-link">
+                    {/* <Link to='/dashboard/inbox' className="dash-side-link">
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <MailIcon />
                             <Typography variant="body1">Inbox</Typography>
+                        </Stack>
+                    </Link> */}
+                    <Link to='/dashboard/usermanagement' className="dash-side-link">
+                        <Stack direction={'row'} spacing={2} className="sidebar-typo">
+                            <PersonIcon />
+                            <Typography variant="body1">User Management</Typography>                           
                         </Stack>
                     </Link>
                     <Link to='/dashboard/project' className="dash-side-link">
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <FolderIcon />
-                            <Typography variant="body1">Project</Typography>
-                            <KeyboardArrowDownIcon />
+                            <Typography variant="body1">Project Management</Typography>                           
                         </Stack>
                     </Link>
                     <Link to='/dashboard/task' className="dash-side-link">
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <TaskIcon />
                             <Typography variant="body1">Task</Typography>
-                            <KeyboardArrowDownIcon />
                         </Stack>
                     </Link>
                     <Link to='/dashboard/calender' className="dash-side-link">
@@ -77,12 +101,16 @@ const DashSidebar = () => {
                         <ToggleOffIcon sx={{ fontSize: '40px', cursor: "pointer" }} />
                     </Stack>
                 </Stack>
-                <Stack direction={'row'} spacing={2} className='logout-button'>
-                    <LogoutIcon fontSize="30px" />
-                    <Typography variant="h6">Logout</Typography>
+                <Stack className='dash-user-show'>
+                    <Typography variant="h6" color="initial" sx={{fontWeight:'semibold'}}>{loginUserData.fullName}</Typography>
+                    <Typography variant="body1" color="initial" sx={{color:'gray'}}>{loginUserData.role}</Typography>
                 </Stack>
+                {/* <Stack direction={'row'} spacing={2} className='dash-logout-btn'>
+                    <LogoutIcon fontSize="30px" />
+                    <Button className="logout-button" onClick={handleLogoutBTN}>Logout</Button>
+                </Stack> */}
             </Box>
         </>
     )
 }
-export default DashSidebar
+export default DashSidebar;
