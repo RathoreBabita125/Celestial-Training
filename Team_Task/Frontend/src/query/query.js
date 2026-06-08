@@ -21,7 +21,6 @@ export const SIGNUP = gql`
         }  
     } 
 `;
-
 export const LOGIN = gql`
     mutation login(
         $email:String!
@@ -41,13 +40,11 @@ export const LOGIN = gql`
         }
     }
 `;
-
 export const LOGOUT = gql`
     mutation logout{
         logout
     }
 `
-
 export const GOOGLE_AUTH_MUTATION = gql`
     mutation AuthWithGoogle(
         $idToken:String
@@ -64,7 +61,6 @@ export const GOOGLE_AUTH_MUTATION = gql`
         }
     }
 `
-
 export const FORGET = gql`
     mutation forget(
         $email:String!
@@ -82,7 +78,6 @@ export const FORGET = gql`
         }
     }
 `
-
 export const ADDUSER = gql`
     mutation addUser( $fullName : String!,
         $email : String!,
@@ -101,7 +96,6 @@ export const ADDUSER = gql`
         }  
     } 
 `
-
 export const UPDATEUSER = gql`
     mutation updateUser(
         $id:ID!
@@ -134,10 +128,19 @@ export const DELETEUSER = gql`
         }
     }
 `
-
 export const GETUSERS = gql`
-    query users{
-        users{
+    query getUsers(
+        $fullName:String
+        $email:String
+        $status:String
+        $role:String
+    ){
+        users(
+            fullName:$fullName
+            email:$email
+            status:$status
+            role:$role
+        ){
             id
             fullName
             email
@@ -150,7 +153,6 @@ export const GETUSERS = gql`
         }
     }
 `
-
 export const CREATEPROJECT = gql`
     mutation createProject(
         $title:String!
@@ -184,10 +186,19 @@ export const CREATEPROJECT = gql`
         }
     }
 `
-
 export const GETPROJECTS = gql`
-    query project{
-        projects{
+    query getProjects(
+        $title:String
+        $projectManager:String
+        $status:String
+        $priority:String
+    ){
+        projects(
+            title:$title
+            projectManager:$projectManager
+            status:$status
+            priority:$priority
+        ){
            id
             title
             description
@@ -200,7 +211,6 @@ export const GETPROJECTS = gql`
         }
     }
 `
-
 export const UPDATEPROJECT = gql`
     mutation updateProject(
         $id:ID!
@@ -264,10 +274,9 @@ export const CREATETASK = gql`
         }
     }
 `
-
 export const GETTASKS = gql`
-    query tasks{
-        tasks{
+    query getTasks{
+        getTasks{
             id
             title
             description
@@ -281,7 +290,6 @@ export const GETTASKS = gql`
         }
     }
 `
-
 export const UPDATETASK = gql`
     mutation updateTask(
         $id:ID!

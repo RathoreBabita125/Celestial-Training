@@ -9,10 +9,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from 'react-toastify';
 import { validateField } from "../../common/formFieldValidate";
-
+import { emailInputCheck, phoneInputCheck } from "../../constants/const.js";
 
 const Signup = () => {
-
     const [user, setUser] = useState({
         fullName: '',
         email: '',
@@ -67,19 +66,18 @@ const Signup = () => {
         return isValid;
     };
 
-    const isFormValid =
-        user.fullName.trim() !== "" &&
-        user.email.trim() !== "" &&
-        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i.test(user.email) &&
-        user.password.length >= 8 &&
-        user.confirmPassword === user.password &&
-        user.role !== "" &&
-        user.phone.trim() !== ""&&
-        /^[6-9]\d{9}$/.test(user.phone);
+    const checkFormValid=user?.fullName?.trim() !== "" &&
+        user?.email?.trim() !== "" &&
+        emailInputCheck.test(user?.email) &&
+        user?.password.length >= 8 &&
+        user?.confirmPassword === user?.password &&
+        user?.role !== "" &&
+        user?.phone.trim() !== "" &&
+        phoneInputCheck.test(user?.phone);
 
     const handleFormSubmit = async (event) => {
-        const checkValidate = validateInput();
         event.preventDefault();
+        const checkValidate = validateInput();
         if (!checkValidate) {
             return;
         }
@@ -111,7 +109,6 @@ const Signup = () => {
             toast.error(`${error.message} Please try again`)
         }
     }
-
     return (
         <>
             <Box className='register-section'>
@@ -245,7 +242,7 @@ const Signup = () => {
                                     className="register-signup-button"
                                     variant="contained"
                                     onClick={handleFormSubmit}
-                                    disabled={!isFormValid}
+                                    disabled={!checkFormValid}
                                 >
                                     Sign Up
                                 </Button>

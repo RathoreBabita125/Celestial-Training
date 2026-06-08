@@ -1,6 +1,6 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, Box, FormLabel, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, Box, FormLabel, Typography, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { GETPROJECTS, UPDATEPROJECT } from "../../query/query";
+import { GETUSERS, UPDATEPROJECT } from "../../query/query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import MyButton from "../../common/Button";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -9,10 +9,14 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import LoadingCompo from "../../common/Loader";
 import { toast } from "react-toastify";
 
-const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProject }) => {
-    const { loading, data } = useQuery(GETPROJECTS);
-    const [updateProject] = useMutation(UPDATEPROJECT);
-    const [editproject, setEditProject] = useState({
+const EditProjectModal = ({ open, handleClose, selectedProject }) => {
+    const { loading, data } = useQuery(GETUSERS);
+    const [updateProject] = useMutation(UPDATEPROJECT,
+        {
+            refetchQueries: ['getProjects']
+        }
+    );
+    const [editProject, setEditProject] = useState({
         title: '',
         projectManager: '',
         engineers: [],
@@ -29,13 +33,14 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
         priority: '',
     });
 
+    useEffect(() => {
+        setEditProject(selectedProject)
+    }, [selectedProject])
+
     if (loading) {
         return <LoadingCompo />
     }
 
-    useEffect(() => {
-        setEditProject(selectedProject)
-    }, [selectedProject])
 
     //input handler
     const handleProjectInputs = (event) => {
@@ -47,16 +52,16 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
     //validation
     const validateProjectInputs = () => {
         const newError = {};
-        if (!editproject.title || editproject.title.trim() === "") {
+        if (!editProject.title || editProject.title.trim() === "") {
             newError.title = "Title field is required.";
         }
-        if (!editproject.description || editproject.description.trim() === "") {
+        if (!editProject.description || editProject.description.trim() === "") {
             newError.description = "Description field is required.";
         }
-        if (!editproject.status || editproject.status.trim() === "") {
+        if (!editProject.status || editProject.status.trim() === "") {
             newError.status = "Status field is required";
         }
-        if (!editproject.priority) {
+        if (!editProject.priority) {
             newError.status = "Priority field is required";
         }
         setError(newError);
@@ -72,39 +77,74 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
         try {
             data?.projects?.filter((currProject) => {
                 if (currProject.id === selectedProject.id) {
-                    setEditProject((preData) => ({ ...preData, id: currProject.id, title: currProject.title, description: currProject.description, status: currProject.status }))
+                    setEditProject((preData) => (
+                        {
+                            ...preData,
+                            id: currProject.id,
+                            title: currProject.title,
+                            description: currProject.description,
+                            projectManager: currProject.projectManager,
+                            status: currProject.status,
+                            priority: currProject.priority,
+                            startDate: currProject.startDate,
+                            endDate: currProject.endDate
+                        }
+                    ))
                 }
             });
             const response = await updateProject({
                 variables: {
-                    id: editproject.id,
-                    userId: editproject.user.id,
-                    projectId: editproject.project.id,
-                    title: editproject.title,
-                    description: editproject.description,
-                    status: editproject.status
+                    id: editProject.id,
+                    title: editProject.title,
+                    description: editProject.description,
+                    projectManager: editProject.projectManager,
+                    engineers: editProject.engineers,
+                    status: editProject.status,
+                    priority: editProject.priority,
+                    startDate: editProject.startDate,
+                    endDate: editProject.endDate
                 }
             });
+            console.log(editProject.startDate);
+            console.log(editProject.title);
             if (response) {
-                setSuccessEditOpen(false);
-                console.log(response);
-                editproject({
+                setEditProject({
                     title: "",
                     description: "",
                     status: "",
                     priority: ""
                 });
+                handleClose()
             }
         } catch (error) {
-            console.log(error);
             toast.error(error.message)
         }
     }
+    //fetch project manager from user
+    const projectManagerUser = data?.users?.filter((currUser) => {
+        return currUser.role === 'Project Manager';
+    });
+
+    //fetch engineer from user
+    const engineerUsers = data?.users?.filter((currUser) => {
+        return currUser.role === 'Engineer';
+    });
+
+    // check validate
+    const isValidProject =
+        editProject?.title !== "" &&
+        editProject?.description !== "" &&
+        editProject?.status!== "" &&
+        editProject?.priority !== "" &&
+        editProject.engineers &&
+        editProject.projectManager !== "" &&
+        editProject.startDate &&
+        editProject.endDate
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <Box sx={{ padding: 2 }}>
-                <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Create Project</DialogTitle>
+                <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Edit Existing Project</DialogTitle>
                 <DialogContent>
                     <Stack spacing={1.5}>
                         <Box >
@@ -114,7 +154,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                                 required
                                 name="title"
                                 margin="normal"
-                                value={editproject.title}
+                                value={editProject.title}
                                 onChange={handleProjectInputs}
                                 error={error.title}
                                 helperText={error.title ? error.title : ''}
@@ -130,7 +170,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                                 multiline
                                 rows={4}
                                 margin="normal"
-                                value={editproject.description}
+                                value={editProject.description}
                                 onChange={handleProjectInputs}
                                 error={error.description}
                                 helperText={error.description ? error.description : ''}
@@ -140,7 +180,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                             <FormLabel sx={{ mb: 1 }}>Project Manager *</FormLabel>
                             <Select
                                 name="projectManager"
-                                value={editproject.projectManager}
+                                value={editProject.projectManager}
                                 onChange={handleProjectInputs}
                                 required
                                 fontWeight
@@ -148,7 +188,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                             >
                                 <MenuItem value="" disabled>Select Propject Manager</MenuItem>
                                 {
-                                    data?.projects?.map((currUser) => {
+                                    projectManagerUser?.map((currUser) => {
                                         return (
                                             <MenuItem value={currUser.fullName} key={currUser.id}>
                                                 {currUser.fullName}
@@ -164,27 +204,24 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                             <Select
                                 multiple
                                 name="engineers"
-                                value={editproject.engineers}
+                                value={editProject.engineers || []}
                                 onChange={handleProjectInputs}
                                 required
                                 displayEmpty
                                 error={error.engineers}
                                 helperText={error.engineers ? error.engineers : ''}
                                 renderValue={(selected) => (
-
-                                    console.log("selected =", editproject),
-
-
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Typography key={value} sx={{ fontSize: 20 }}>{value}</Typography>
-                                        ))}
+                                        {(selected || []).map((value) => {
+                                            return <Typography key={value}>{value}</Typography>
+                                        }
+                                        )}
                                     </Box>
                                 )}
                             >
                                 <MenuItem value="" disabled>Select Engineers</MenuItem>
                                 {
-                                    data?.projects?.map((currUser, index) => {
+                                    engineerUsers?.map((currUser, index) => {
                                         return (
                                             <MenuItem value={currUser.fullName} key={currUser.id}>
                                                 {index + 1}. {currUser.fullName}
@@ -199,7 +236,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                                 <FormLabel sx={{ mb: 1 }}>Status *</FormLabel>
                                 <Select
                                     name="status"
-                                    value={editproject.status}
+                                    value={editProject.status}
                                     onChange={handleProjectInputs}
                                     required
                                     displayEmpty
@@ -219,7 +256,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                                 <FormLabel sx={{ mb: 1 }}>Priority *</FormLabel>
                                 <Select
                                     name="priority"
-                                    value={editproject.priority}
+                                    value={editProject.priority}
                                     onChange={handleProjectInputs}
                                     required
                                     displayEmpty
@@ -244,13 +281,14 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                                         type="date"
                                         name="startDate"
                                         margin="normal"
-                                        value={editproject.startDate}
+                                        value={editProject.startDate}
                                         onChange={(newValue) =>
                                             setEditProject({
-                                                ...editproject,
+                                                ...editProject,
                                                 startDate: newValue,
                                             })
                                         }
+                                        onChange={handleProjectInputs}
                                         slotProps={
                                             {
                                                 textField: {
@@ -270,10 +308,10 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                                         type="date"
                                         name="endDate"
                                         margin="normal"
-                                        value={editproject.endDate}
+                                        value={editProject.endDate}
                                         onChange={(newValue) =>
                                             setEditProject({
-                                                ...editproject,
+                                                ...editProject,
                                                 endDate: newValue,
                                             })
                                         }
@@ -292,7 +330,7 @@ const EditProjectModal = ({ open, handleClose, setSuccessEditOpen, selectedProje
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
-                    <MyButton handler={handleEditProjectBTN} name="Create" />
+                    <Button onClick={handleEditProjectBTN} disabled={isValidProject} sx={{backgroundColor:'#053348', color:'white'}}>Edit</Button>
                 </DialogActions>
             </Box>
         </Dialog>

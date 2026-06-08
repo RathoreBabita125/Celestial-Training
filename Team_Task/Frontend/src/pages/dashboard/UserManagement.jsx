@@ -15,25 +15,54 @@ import { useState } from 'react';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import FilterSection from '../filter/FilterModal';
 import MyButton from '../../common/Button';
 import LoadingCompo from '../../common/Loader';
 import AddUser from '../members/AddUser';
 import UpdateUser from '../members/UpdateUser';
 import DeleteUser from '../members/DeleteUser';
+import FilterModal from '../filter/FilterModal';
 
 const UserManagement = () => {
-    const { data } = useQuery(GETUSERS);
+
+    const {loading, data } = useQuery(GETUSERS);
     const [openUser, setOpenUser] = useState(false);
     const [openUpdateUser, setOPenUpdateUser] = useState(false);
-    const[openDelete, setOpenDelete]=useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [userEdit, setUserEdit] = useState(null);
+    const [deleteUser, setDeleteUser] = useState(null);
     const [openFilter, setOpenFilter] = useState(false);
-    // const [isApplyFilter, setApplyFilter] = useState(false);
-    const [filterValue, setFilterValue] = useState("");
-    const[userEdit, setUserEdit]=useState(null);
-    const [deleteUser, setDeleteUser]=useState(null)
+
+    const [filters, setFilter] = useState({
+        fullName: "",
+        email: "",
+        role: "",
+        status: "",
+    });
+
+    if (loading) {
+        return <LoadingCompo /> 
+    }
+
+    const filteredUsers = (data?.users || []).filter((user) => {
+        const matchName = filters.fullName
+            ? user.fullName?.toLowerCase().includes(filters.fullName.toLowerCase())
+            : true;
+        const matchEmail = filters.email
+            ? user.email?.toLowerCase().includes(filters.email.toLowerCase())
+            : true;
+        const matchRole = filters.role
+            ? user.role?.toLowerCase().includes(filters.role.toLowerCase())
+            : true;
+        const matchStatus = filters.status
+            ? user.status?.toLowerCase().includes(filters.status.toLowerCase())
+            : true;
+        return matchName && matchEmail && matchRole && matchStatus;
+    });
+
+    const paginatedUsers = filteredUsers
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -45,38 +74,24 @@ const UserManagement = () => {
     const handleCloseUser = () => {
         setOpenUser(false);
     };
-    const filteredUsers = data?.users.filter((user) => {
-        return user.email.toLowerCase().includes(filterValue.toLowerCase()) ||
-            user.role.toLowerCase().includes(filterValue.toLowerCase()) ||
-            user.fullName.toLowerCase().includes(filterValue.toLowerCase())
-    });
-
-    // const userData = isApplyFilter ? filteredUsers : data?.users;
     const handleCloseFilter = () => {
         setOpenFilter(false)
     };
-
     const handleCloseUpdate = () => {
         setOPenUpdateUser(false)
     };
-
-    const handleDeleteClose=()=>{
+    const handleDeleteClose = () => {
         setOpenDelete(false);
-    }
+    };
 
-    if (!data) {
-        return <Box >
-            <LoadingCompo />
-        </Box>
-    }
     return (
         <>
             <Box className="dash-teamuser-section">
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
                     <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', color: '#053348' }}>All Team members are here</Typography>
                     <Stack direction={'row'} spacing={3}>
-                        <MyButton name="Add Member" handler={()=>setOpenUser(true)}/>
-                        <AddUser 
+                        <MyButton name="Add Member" handler={() => setOpenUser(true)} />
+                        <AddUser
                             open={openUser}
                             handleClose={handleCloseUser}
                             setOpenUser={setOpenUser}
@@ -89,14 +104,13 @@ const UserManagement = () => {
                             Filter
                         </Button>
                     </Stack>
-                    <FilterSection
+                    <FilterModal
                         open={openFilter}
                         onClose={handleCloseFilter}
                         setOpenFilter={setOpenFilter}
-                        filterValue={filterValue}
-                        setFilterValue={setFilterValue}
+                        filters={filters}
+                        setFilter={setFilter}
                         setPage={setPage}
-                    // setApplyFilter={setApplyFilter}
                     />
                 </Box>
                 <Stack>
@@ -116,7 +130,7 @@ const UserManagement = () => {
                             </TableHead>
                             <TableBody>
                                 {
-                                    data?.users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((currUser) => {
+                                    paginatedUsers.map((currUser) => {
                                         return (<TableRow key={currUser.id}>
                                             <TableCell className='team-table-row' align='center'>{currUser.id}</TableCell>
                                             <TableCell className='team-table-row' align='center'>{currUser.fullName}</TableCell>
@@ -133,12 +147,12 @@ const UserManagement = () => {
                                             })}</TableCell>
                                             <TableCell className='team-table-row' align='center'>
                                                 <Stack direction={'row'} spacing={2}>
-                                                    <EditSquareIcon 
-                                                        sx={{ cursor: 'pointer' }} 
-                                                        onClick={()=>{
+                                                    <EditSquareIcon
+                                                        sx={{ cursor: 'pointer' }}
+                                                        onClick={() => {
                                                             setOPenUpdateUser(true);
                                                             setUserEdit(currUser)
-                                                        }}       
+                                                        }}
                                                     />
                                                     <UpdateUser
                                                         open={openUpdateUser}
@@ -146,16 +160,16 @@ const UserManagement = () => {
                                                         setOPenUpdateUser={setOPenUpdateUser}
                                                         userEdit={userEdit}
                                                     />
-                                                    <DeleteIcon 
-                                                        sx={{ cursor: 'pointer' }} 
+                                                    <DeleteIcon
+                                                        sx={{ cursor: 'pointer' }}
                                                         onClick={
-                                                            ()=>{
+                                                            () => {
                                                                 setOpenDelete(true);
                                                                 setDeleteUser(currUser);
                                                             }
                                                         }
                                                     />
-                                                    <DeleteUser 
+                                                    <DeleteUser
                                                         open={openDelete}
                                                         handleClose={handleDeleteClose}
                                                         setOpenDelete={setOpenDelete}
@@ -172,7 +186,7 @@ const UserManagement = () => {
                         <TablePagination
                             className='table-pagination'
                             component="div"
-                            count={data.users.length}
+                            count={filteredUsers.length}
                             page={page}
                             onPageChange={handleChangePage}
                             rowsPerPage={rowsPerPage}

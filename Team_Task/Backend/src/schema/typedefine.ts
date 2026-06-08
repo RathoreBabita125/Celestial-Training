@@ -46,13 +46,20 @@ export const typeDefs=gql`
         token:String
     }
     type Query{
-        users:[User]
+        users(
+            fullName: String
+            email: String
+            status: String
+            role: String
+        ):[User]
+
         projects(
             title:String
             status:String
             priority:String
             projectManager:String
         ):[Project]
+
         tasks:[Task]
     }
     type Mutation{

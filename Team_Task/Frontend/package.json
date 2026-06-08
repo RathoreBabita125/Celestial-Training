@@ -17,6 +17,7 @@
     "@mui/material": "^9.0.1",
     "@mui/styled-engine-sc": "^9.0.1",
     "@mui/x-date-pickers": "^9.4.0",
+    "@mui/x-scheduler": "^9.0.0-beta.0",
     "date-fns": "^4.4.0",
     "dayjs": "^1.11.21",
     "graphql": "^16.14.0",

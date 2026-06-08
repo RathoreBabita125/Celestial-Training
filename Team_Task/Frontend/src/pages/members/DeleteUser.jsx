@@ -6,7 +6,9 @@ import { DELETEUSER } from "../../query/query";
 import { toast } from "react-toastify";
 
 const DeleteUser = ({ open, handleClose, setOpenDelete, deleteUser }) => {
-    const [updateUser]=useMutation( DELETEUSER);
+    const [updateUser]=useMutation( DELETEUSER, {
+            refetchQueries:['getUsers']
+        });
 
     const handleDeleteUser = async() => {
         try {
@@ -26,7 +28,7 @@ const DeleteUser = ({ open, handleClose, setOpenDelete, deleteUser }) => {
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" >
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"30%"}}>
             <Box sx={{ padding: 3 }}>
                 <DialogContent>
                    <Typography variant="h5" color="initial">Are you sure? You want to delete this user.</Typography>

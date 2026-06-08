@@ -12,7 +12,7 @@ const Home = () => {
             <Box>
                 <AppBar position='fixed' className='header-appbar'>
                     <Toolbar className='navbar-toolbar'>
-                        <Typography variant='h5' >Team Task</Typography>
+                        <Typography variant='h5' >ProjectHub</Typography>
                         <Box className='navbar-button-box'>
                             <Link to='/signin'><Button className='navbar-button' variant='text'>Sign in</Button></Link>
                             <Link to='/signup'><Button className='navbar-button' variant='text'>Sign up Free <ArrowForwardIcon /></Button></Link>

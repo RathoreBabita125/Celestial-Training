@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputAdornment, IconButton, Stack, Box } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputAdornment, IconButton, Stack, Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import MyButton from "../../common/Button";
@@ -6,9 +6,12 @@ import { UPDATEUSER } from "../../query/query";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from "react-toastify";
+import { emailInputCheck, phoneInputCheck } from "../../constants/const";
 
 const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
-    const [updateUser]=useMutation(UPDATEUSER)
+    const [updateUser]=useMutation(UPDATEUSER,{
+            refetchQueries:['getUsers']
+    });
     const [showVisible, setShowVisible] = useState(false);
     const [user, setUser] = useState({
         fullName: '',
@@ -17,7 +20,6 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
         role: '',
         phone: ''
     });
-
     useEffect(()=>{
         if(userEdit){
             setUser(userEdit)
@@ -29,7 +31,6 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
         const value = event.target.value;
         setUser((preData) => ({ ...preData, [name]: value }));
     };
-
 
     const handleUpdateUser = async() => {
         try {
@@ -46,8 +47,7 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
             if(response){
                 toast.success("User has been updated successfully.");
                 setOPenUpdateUser(false);
-            }
-        
+            }        
             setUser({
                 fullName: '',
                 email: '',
@@ -60,9 +60,18 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
             toast.error(error.message);
         }
     }
+    
+    const isFormValid =
+        user.email !== "" &&
+        emailInputCheck.test(user.email) &&
+        user.password !=="" &&
+        user.fullName !="" &&
+        user.role !=="" &&
+        user.phone !="" &&
+        phoneInputCheck.test(user.phone)
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" >
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"40%"}}>
             <Box sx={{ padding: 3 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 22 }}>Update Existing User</DialogTitle>
                 <DialogContent>
@@ -140,7 +149,7 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={() => setOPenUpdateUser(false)} name="Cancel" />
-                    <MyButton handler={handleUpdateUser} name="Update" />
+                    <Button onClick={handleUpdateUser} disabled={!isFormValid} sx={{backgroundColor:'#053348', color:'white'}}>Update</Button>
                 </DialogActions>
             </Box>
         </Dialog>

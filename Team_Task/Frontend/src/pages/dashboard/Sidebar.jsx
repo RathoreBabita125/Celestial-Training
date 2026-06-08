@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 // import MailIcon from '@mui/icons-material/Mail';
 import FolderIcon from '@mui/icons-material/Folder';
 import TaskIcon from '@mui/icons-material/Task';
@@ -9,39 +9,26 @@ import MessageIcon from '@mui/icons-material/Message';
 import GroupIcon from '@mui/icons-material/Group';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
-import { Link, useNavigate } from "react-router";
-import { useMutation } from "@apollo/client/react";
-import { LOGOUT } from "../../query/query";
+import { Link } from "react-router";
 import PersonIcon from '@mui/icons-material/Person';
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 
 const DashSidebar = () => {
-    // const navigate=useNavigate();
-    // const [logout]=useMutation(LOGOUT);
-
-     const { loginUserData } = useContext(AuthContext);
-
-    // const handleLogoutBTN=async()=>{
-    //     try {
-    //         await logout();
-    //         navigate("/");            
-    //     } catch (error) {
-    //         console.log(error);   
-    //     };
-    // };
+   
+    const { loginUserData, theme, setTheme } = useContext(AuthContext);
+    const themeColor=theme ? "darkMode" : "lightMode"; 
 
     return (
         <>
-            <Box className="sidebar">
-                <Stack direction={'column'} spacing={4} className="sidebar-box">
+            <Box className={`sidebar ${themeColor}`}>
+                <Stack direction={'column'} spacing={4} className={`sidebar-box ${themeColor}`}>
                     <Stack >
                         <Typography variant='h5' className="sidebar-typo" sx={{ fontWeight: 'bold' }}>ProjectHub</Typography>
                     </Stack>
-                    <Link to='/dashboard' className="dash-side-link" >
+                    <Link to='/dashboard' className={`dash-side-link ${themeColor}`}>
                         <Stack direction={'row'} spacing={2} className="sidebar-typo" sx={{mt:5}}>
                             <DashboardRoundedIcon />
                             <Typography variant="body1">Dashboard</Typography>
@@ -53,31 +40,31 @@ const DashSidebar = () => {
                             <Typography variant="body1">Inbox</Typography>
                         </Stack>
                     </Link> */}
-                    <Link to='/dashboard/usermanagement' className="dash-side-link">
+                    <Link to='/dashboard/usermanagement' className={`dash-side-link ${themeColor}`}>
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <PersonIcon />
                             <Typography variant="body1">User Management</Typography>                           
                         </Stack>
                     </Link>
-                    <Link to='/dashboard/project' className="dash-side-link">
+                    <Link to='/dashboard/project' className={`dash-side-link ${themeColor}`}>
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <FolderIcon />
                             <Typography variant="body1">Project Management</Typography>                           
                         </Stack>
                     </Link>
-                    <Link to='/dashboard/task' className="dash-side-link">
+                    <Link to='/dashboard/task' className={`dash-side-link ${themeColor}`}>
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <TaskIcon />
                             <Typography variant="body1">Task</Typography>
                         </Stack>
                     </Link>
-                    <Link to='/dashboard/calender' className="dash-side-link">
+                    <Link to='/dashboard/calender' className={`dash-side-link ${themeColor}`}>
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <CalendarMonthIcon />
                             <Typography variant="body1">Calender</Typography>
                         </Stack>
                     </Link>
-                    <Link to='/dashboard/team' className="dash-side-link">
+                    {/* <Link to='/dashboard/team' className="dash-side-link">
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <GroupIcon />
                             <Typography variant="body1">Teams</Typography>
@@ -88,27 +75,23 @@ const DashSidebar = () => {
                             <MessageIcon />
                             <Typography variant="body1">Messages</Typography>
                         </Stack>
-                    </Link>
-                    <Link to='/dashboard/activity' className="dash-side-link">
+                    </Link> */}
+                    {/* <Link to='/dashboard/activity' className="dash-side-link">
                         <Stack direction={'row'} spacing={2} className="sidebar-typo">
                             <LocalActivityIcon />
                             <Typography variant="body1">Activity</Typography>
                         </Stack>
-                    </Link>
+                    </Link> */}
                     <Stack direction={'row'} spacing={2} className="sidebar-typo" sx={{ alignItems: 'center' }}>
                         <Brightness4Icon />
                         <Typography variant="body1">Dark Mode</Typography>
-                        <ToggleOffIcon sx={{ fontSize: '40px', cursor: "pointer" }} />
+                        <ToggleOffIcon sx={{ fontSize: '40px', cursor: "pointer" }} onClick={()=>setTheme(!theme)}/>
                     </Stack>
                 </Stack>
                 <Stack className='dash-user-show'>
                     <Typography variant="h6" color="initial" sx={{fontWeight:'semibold'}}>{loginUserData.fullName}</Typography>
                     <Typography variant="body1" color="initial" sx={{color:'gray'}}>{loginUserData.role}</Typography>
                 </Stack>
-                {/* <Stack direction={'row'} spacing={2} className='dash-logout-btn'>
-                    <LogoutIcon fontSize="30px" />
-                    <Button className="logout-button" onClick={handleLogoutBTN}>Logout</Button>
-                </Stack> */}
             </Box>
         </>
     )

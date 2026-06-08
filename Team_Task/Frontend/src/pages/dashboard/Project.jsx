@@ -14,6 +14,7 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 import EditProjectModal from '../project/EditProjectModal';
 import LoadingCompo from '../../common/Loader';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterProjectModal from '../project/FilterProjectModal';
 
 const Project = () => {
 
@@ -21,48 +22,70 @@ const Project = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [openView, setOpenView] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
-    const [successEditOpen, setSuccessEditOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState(null);
-    const [selectDeleteID, setSelectDeleteID]=useState(null);
-    
-    const[filters, setFilter]=useState({
-        title:'',
-        status:'',
-        priority:'',
-        projectManager:''
+    const [selectedProject, setSelectedProject] = useState({});
+    const [selectDeleteID, setSelectDeleteID] = useState(null);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [openFilter, setOpenFilter] = useState(false);
+
+    const [filters, setFilter] = useState({
+        title: '',
+        status: '',
+        priority: '',
+        projectManager: ''
     })
-    const { loading, data } = useQuery(GETPROJECTS,{
-        variables:{
-            title:filters.title,
-            status:filters.status || undefined,
-            priority:filters.priority || undefined,
-            projectManager: filters.projectManager || undefined
-        }
-    });
+    const { loading, data } = useQuery(GETPROJECTS);
 
     if (loading) {
         return <LoadingCompo />
     }
-    console.log(data);
 
+    const filteredProjects = (data?.projects || []).filter((project) => {
+        const matchTitle = filters.title
+            ? project.title?.toLowerCase().includes(filters.title.toLowerCase())
+            : true;
+        const matchStatus = filters.status
+            ? project.status?.toLowerCase() === filters.status.toLowerCase()
+            : true;
+        const matchPriority = filters.priority
+            ? project.priority?.toLowerCase() === filters.priority.toLowerCase()
+            : true;
+        const matchManager = filters.projectManager
+            ? project.projectManager?.toLowerCase().includes(filters.projectManager.toLowerCase())
+            : true;
+        return matchTitle && matchStatus && matchPriority && matchManager;
+    });
+
+    const paginatedProjects = filteredProjects
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
     const handleViewProject = (project) => {
         setSelectedProject(project);
         setOpenView(true);
     };
+    const handleCloseFilter = () => {
+        setOpenFilter(false);
+    }
     const handleCloseView = () => {
         setOpenView(false);
-        setSelectedProject(null);
     };
     const handleClose = () => {
         setOpenCreate(false);
-        setSuccessEditOpen(false);
     }
-
     const handleCloseDelete = () => {
         setOpenDelete(false);
     };
-    console.log(data)
 
+    const handleCloseEdit = () => {
+        setOpenEdit(false)
+    }
     return (
         <>
             <Box className="project-section">
@@ -75,13 +98,21 @@ const Project = () => {
                                 open={openCreate}
                                 handleClose={handleClose}
                             />
-                            <Button
-                                sx={{ gap: 2, backgroundColor: '#053348', color: 'white' }}
-                                // onClick={() => setOpenFilter(true)}
+                            <Button sx={{ gap: 2, backgroundColor: '#053348', color: 'white' }}
+                                onClick={() => setOpenFilter(true)}
                             >
-                                <FilterListIcon/>
+                                <FilterListIcon />
                                 Filter
                             </Button>
+                            <FilterProjectModal
+                                open={openFilter}
+                                onClose={handleCloseFilter}
+                                setFilter={setFilter}
+                                filters={filters}
+                                setPage={setPage}
+                                setOpenFilter={setOpenFilter}
+                            />
+
                         </Stack>
                     </Box>
                 }
@@ -104,54 +135,53 @@ const Project = () => {
                             </TableHead>
                             <TableBody className='project-table-body'>
                                 {
-                                    data?.projects.map((currProject) => {
+                                    paginatedProjects.map((currProject) => {
                                         return <TableRow key={currProject.id}>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.id}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.title}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.description?.split(" ").slice(0, 3).join(" ")}
                                                 {currProject.description?.split(" ").length > 3 && "..."}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.projectManager}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {
-                                                    Array.isArray(currProject.engineers) ? 
-                                                    currProject.engineers.map((engineer, index)=>(
-                                                        <Typography key={index}>{engineer}</Typography>
-                                                    )) : currProject.engineer
+                                                    Array.isArray(currProject.engineers) ?
+                                                        currProject.engineers.map((engineer, index) => (
+                                                            <Typography key={index}>{engineer}</Typography>
+                                                        )) : currProject.engineer
                                                 }
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.status}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.priority}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.startDate}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
+                                            <TableCell className='team-table-row' align='center'>
                                                 {currProject.endDate}
                                             </TableCell>
-                                            <TableCell className='project-table-row' align='center'>
-                                                <Stack direction={'row'}>
+                                            <TableCell className='team-table-row' align='center'>
+                                                <Stack direction={'row'} spacing={2}>
                                                     <EditSquareIcon
                                                         sx={{ fontSize: 25, cursor: 'pointer', color: '#053348' }}
-                                                        onClick={() =>{
+                                                        onClick={() => {
                                                             setOpenEdit(true);
                                                             setSelectedProject(currProject);
                                                         }}
                                                     />
                                                     <EditProjectModal
                                                         open={openEdit}
-                                                        handleClose={handleClose}
-                                                        setSuccessOpen={setSuccessEditOpen}
+                                                        handleClose={handleCloseEdit}
                                                         selectedProject={selectedProject}
                                                     />
                                                     <DeleteForeverIcon
@@ -176,7 +206,7 @@ const Project = () => {
                                                     <ViewProjectModal
                                                         open={openView}
                                                         handleClose={handleCloseView}
-                                                        project={selectedProject}
+                                                        selectedProject={selectedProject}
                                                     />
                                                 </Stack>
                                             </TableCell>
@@ -185,6 +215,16 @@ const Project = () => {
                                 }
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            className='table-pagination'
+                            component="div"
+                            count={filteredProjects.length}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            sx={{ color: '#053348', fontWeight: 'bold' }}
+                        />
                     </TableContainer>
                 </Stack>
             </Box>

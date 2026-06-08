@@ -3,49 +3,60 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import './Dashboard.css';
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { settings } from "../../constants/const";
+import { LOGOUT } from "../../query/query";
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useMutation } from "@apollo/client/react";
+import { useNavigate } from "react-router";
+
 
 const DashNavbar = () => {
     const { loginUserData } = useContext(AuthContext);
-
-    const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
+    const [logout]=useMutation(LOGOUT);
+    const navigate=useNavigate();
+    const {theme} = useContext(AuthContext)
+    const themeColor=theme ? "darkMode" : "lightMode"; 
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
 
+    const handleLogoutBTN = async () => {
+        try {
+            await logout();
+            navigate("/");
+        } catch (error) {
+            console.log(error);
+        };
+    };
+
+    const handleDashboard=()=>{
+        navigate("/dashboard");
+    }
+
     return (
         <>
-            <AppBar position='relative' className="dashboard-navbar">
+            <AppBar position='relative' className={`dashboard-navbar ${themeColor}`}>
                 <Toolbar className='dashboard-toolbar'>
                     <Box className="dashboard-navbar-items" >
                         <Box className="dashboard-navbar-input">
                         </Box>
                         <Stack direction={'row'} spacing={12}>
-                            <Box className="dashboard-navbar-text">
-                                <Button>Feedback</Button>
-                                <NotificationsIcon sx={{ cursor: 'pointer', color: '#053348' }} />
+                            <Box className={`dashboard-navbar-text`}>
+                                <Button className={`${themeColor}`}>Feedback</Button>
+                                <NotificationsIcon sx={{ cursor: 'pointer' }}  className={`${themeColor}`}/>
                             </Box>
-                            <Tooltip title="Open settings">
-                                <IconButton >
-                                    <Avatar sx={{ backgroundColor: '#053348', color: 'white' }}>
+                            <Tooltip>
+                                <IconButton onClick={handleOpenUserMenu}>
+                                    <Avatar className={`${themeColor}`}>
                                         {loginUserData?.fullName?.[0].toUpperCase()}
                                     </Avatar>
                                 </IconButton>
                                 <Menu
-                                    sx={{ mt: '45px' }}
+                                    sx={{ mt: '55px' }}
                                     id="menu-appbar"
                                     anchorEl={anchorElUser}
                                     anchorOrigin={{
@@ -60,11 +71,18 @@ const DashNavbar = () => {
                                     open={Boolean(anchorElUser)}
                                     onClose={handleCloseUserMenu}
                                 >
-                                    {settings.map((setting) => (
-                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                            <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                                        </MenuItem>
-                                    ))}
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Typography sx={{ textAlign: 'center' }}>Profile</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Typography sx={{ textAlign: 'center' }} onClick={handleDashboard}>Dashboard</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Box sx={{display:"flex", alignItems:"center", gap:1}}>
+                                            <LogoutIcon fontSize="30px" />
+                                            <Typography onClick={handleLogoutBTN}>Logout</Typography>
+                                        </Box>
+                                    </MenuItem>
                                 </Menu>
                             </Tooltip>
                         </Stack>

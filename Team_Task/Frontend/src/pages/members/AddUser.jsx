@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputAdornment, IconButton, Stack, Box } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputAdornment, IconButton, Stack, Box, Button } from "@mui/material";
 import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import MyButton from "../../common/Button";
@@ -6,9 +6,14 @@ import { ADDUSER } from "../../query/query";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from "react-toastify";
+import { emailInputCheck, phoneInputCheck } from "../../constants/const.js";
 
 const AddUser = ({ open, handleClose, setOpenUser }) => {
-    const [addUser] = useMutation(ADDUSER);
+    const [addUser] = useMutation(ADDUSER,
+        {
+            refetchQueries: ['getUsers']
+        }
+    );
     const [showVisible, setShowVisible] = useState(false);
     const [user, setUser] = useState({
         fullName: '',
@@ -17,13 +22,23 @@ const AddUser = ({ open, handleClose, setOpenUser }) => {
         role: '',
         phone: ''
     });
+
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
         setUser((preData) => ({ ...preData, [name]: value }));
     };
 
-    const handleAddUser = async() => {
+    const isFormValid =
+        user.email.trim() !== "" &&
+        emailInputCheck.test(user.email) &&
+        user.password.length >= 8 &&
+        user.fullName!="" &&
+        user.role!=="" &&
+        user.phone!="" &&
+        phoneInputCheck.test(user.phone)
+
+    const handleAddUser = async () => {
         try {
             const response = await addUser({
                 variables: {
@@ -35,7 +50,7 @@ const AddUser = ({ open, handleClose, setOpenUser }) => {
                 }
             });
             if (response) {
-                toast.success("User has been successfully added.")
+                toast.success("User has been successfully added.");
             }
             console.log(response);
             setUser({
@@ -47,10 +62,9 @@ const AddUser = ({ open, handleClose, setOpenUser }) => {
             });
         } catch (error) {
             console.log(error);
-            toast.error(error.message)
+            toast.error(error.message);
         }
-    }
-    console.log(open);
+    };
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
@@ -131,7 +145,7 @@ const AddUser = ({ open, handleClose, setOpenUser }) => {
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={() => setOpenUser(false)} name="Cancel" />
-                    <MyButton handler={handleAddUser} name="Add User" />
+                    <Button onClick={handleAddUser} disabled={!isFormValid} sx={{ backgroundColor: '#053348', color: 'white' }}>Add User</Button>
                 </DialogActions>
             </Box>
         </Dialog>

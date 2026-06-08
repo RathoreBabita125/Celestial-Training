@@ -1,4 +1,4 @@
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link, useNavigate } from "react-router";
 import { useContext, useState } from "react";
@@ -6,12 +6,15 @@ import { useMutation } from "@apollo/client/react";
 import { LOGIN } from "../../query/query";
 import './Login.css';
 import { AuthContext } from "../../context/AuthContext";
-
 import { toast } from "react-toastify";
 import { validateField } from "../../common/formFieldValidate";
+import { emailInputCheck } from "../../constants/const";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Signin = () => {
     const { setLoginUserData } = useContext(AuthContext);
+    const [showVisible, setShowVisible] = useState(false);
     const navigate = useNavigate();
     const [user, setUser] = useState({
         email: "",
@@ -21,7 +24,6 @@ const Signin = () => {
         email: "",
         password: ""
     });
-    const [newErrorMessage, setNewErrorMessage] = useState("");
     const [loginData] = useMutation(LOGIN);
 
     const handleBlur = (e) => {
@@ -45,7 +47,7 @@ const Signin = () => {
 
     //validate input
     const validateInput = () => {
-        const fields = ['fullName', 'email', 'role', 'password', 'confirmPassword', 'phone'];
+        const fields = ['email', 'password'];
         const newErrors = {};
         let isValid = true;
 
@@ -60,14 +62,15 @@ const Signin = () => {
 
     const isFormValid =
         user.email.trim() !== "" &&
-        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i.test(user.email) &&
+        emailInputCheck.test(user.email) &&
         user.password.length >= 8;
+
 
     const loginButtonHandler = async (event) => {
         event.preventDefault();
         const checkValidates = validateInput();
         if (!checkValidates) {
-            setNewErrorMessage("Please enter valid email or password");
+            throw new Error("Enter valid details");
         }
         try {
             const response = await loginData({
@@ -88,6 +91,7 @@ const Signin = () => {
            toast.error(error.message);
         };
     }
+
     return (
         <>
             <Box className="login-section">
@@ -111,7 +115,7 @@ const Signin = () => {
                                 variant="standard"
                                 color="success" />
                             <TextField
-                                type="password"
+                                type={showVisible.password ? 'text' : 'password'}
                                 name="password"
                                 error={error.password}
                                 helperText={error?.password ? error.password : ''}
@@ -119,6 +123,17 @@ const Signin = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 label="Password"
+                                slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, password: !pre.password }))}>
+                                                        {showVisible.password ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    }}
                                 variant="standard"
                                 color="success" />
                             <Stack direction={'row'} sx={{ justifyContent: 'space-between', marginTop: 2, textAlign: 'center' }}>

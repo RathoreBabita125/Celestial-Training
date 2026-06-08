@@ -14,7 +14,16 @@ export class Task{
     description!:string;
 
     @Column()
+    priority!:string;
+
+    @Column()
     status!:string;
+
+    @Column({type:'date'})
+    dueDate!:Date;
+
+    @Column({type:'date'})
+    estDate!:Date
 
     @ManyToOne(()=>User, (user)=>user.tasks)
     assignedTo:User | undefined;
@@ -22,3 +31,4 @@ export class Task{
     @ManyToOne(()=>Project, (project)=>project.tasks)
     project:Project | undefined;
 };
+

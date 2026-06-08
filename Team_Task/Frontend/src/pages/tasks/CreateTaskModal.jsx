@@ -1,6 +1,6 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, FormLabel, Box, Typography, Button } from "@mui/material";
 import { useState } from "react";
-import { CREATEPROJECT, GETUSERS } from "../../query/query";
+import { CREATETASK, GETUSERS } from "../../query/query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import MyButton from "../../common/Button";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -9,97 +9,75 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import LoadingCompo from "../../common/Loader";
 import { toast } from "react-toastify";
 
-const CreateProjectModal = ({ open, handleClose }) => {
-    const [createProject] = useMutation(CREATEPROJECT,
+const CreateTaskModal = ({ open, handleClose }) => {
+    const [createTask] = useMutation(CREATETASK,
         {
             refetchQueries: ['getProjects']
         }
     );
     const { loading, data } = useQuery(GETUSERS);
-    const [project, setProject] = useState({
-        title: '',
-        projectManager: '',
-        engineers: [],
-        description: '',
-        status: '',
-        priority: '',
-        startDate: '',
-        endDate: ''
-    });
-    const [error, setError] = useState({
+    
+    const [task, setTask] = useState({
         title: '',
         description: '',
+        assignedTo: [],
+        projectName: [],
         status: '',
         priority: '',
+        dueDate: '',
+        estimateDate: ''
     });
-    const handleProjectInputs = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setProject((preData) => ({ ...preData, [name]: value }));
+
+    //loading data
+    if (loading) {
+        return <LoadingCompo />
     }
 
-    //validation
-    const validateProjectInputs = () => {
-        const newError = {};
-        if (!project.title || project.title.trim() === "") {
-            newError.title = "Project name field is required.";
-        }
-        if (!project.description || project.description.trim() === "") {
-            newError.description = "Description field is required.";
-        }
-        if (!project.status || project.status.trim() === "") {
-            newError.status = "Status field is required";
-        }
-        if (!project.priority) {
-            newError.status = "Priority field is required";
-        }
-        setError(newError);
-        return Object.keys(newError).length === 0;
+    const handleTaskInputs = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setTask((preData) => ({ ...preData, [name]: value }));
     }
 
     // check validate
     const isValidProject =
-        project?.title.trim() !== "" &&
-        project?.description.trim()!=="" &&
-        project?.status.trim()!=="" &&
-        project?.priority.trim()!==""&&
-        project.engineers &&
-        project.projectManager.trim()!==""&&
-        project.startDate &&
-        project.endDate
-        
+        task?.title.trim() !== "" &&
+        task?.description.trim()!=="" &&
+        task?.assignedTo.trim()!=="" &&
+        task.projectName.trim()!==""&&
+        task?.priority.trim()!==""&&
+        task?.status.trim()!==""&&
+        task.dueDate &&
+        task.estDate 
 
     // handle create project click
     const handleCreateProject = async () => {
-        const checkValidate = validateProjectInputs();
-        if (!checkValidate) {
-            throw new Error("Please fill all required field.");
-        }
         try {
-            const response = await createProject({
+            const response = await createTask({
                 variables: {
-                    title: project.title,
-                    description: project.description,
-                    projectManager: project.projectManager,
-                    engineers: project.engineers,
-                    status: project.status,
-                    priority: project.priority,
-                    startDate: project.startDate,
-                    endDate: project.endDate,
+                    title: task.title,
+                    description: task.description,
+                    assignedTo: task.assignedTo,
+                    projectName: task.projectName,
+                    priority: task.priority,
+                    status: task.status,
+                    dueDate: task.dueDate,
+                    estDate: task.estDate,
                 }
             });
-            setProject({
+            setTask({
                 title: '',
-                projectManager: '',
-                engineers: [],
                 description: '',
+                assignedTo: [],
+                projectName: [],
                 status: '',
                 priority: '',
-                startDate: '',
-                endDate: ''
+                dueDate: '',
+                estimateDate: ''
             });
+
             if (response) {
-                toast.success("Project has been successfully created.");
+                toast.success("Task has been successfully created.");
                 handleClose();
             }
         } catch (error) {
@@ -108,44 +86,34 @@ const CreateProjectModal = ({ open, handleClose }) => {
         };
     };
 
-    //loading data
-    if (loading) {
-        return <LoadingCompo />
-    }
-
-    //fetch project manager from user
-    const projectManagerUser = data?.users?.filter((currUser) => {
-        return currUser.role === 'Project Manager';
-    });
 
     //fetch engineer from user
     const engineerUsers = data?.users?.filter((currUser) => {
         return currUser.role === 'Engineer';
     });
+    console.log(engineerUsers)
 
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <Box sx={{ padding: 2 }}>
-                <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Create Project</DialogTitle>
+                <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Add Task</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={1.5}>
+                    <Stack spacing={1}>
                         <Box >
-                            <FormLabel>Project Name *</FormLabel>
+                            <FormLabel>Task Name *</FormLabel>
                             <TextField
                                 fullWidth
                                 required
                                 name="title"
                                 margin="normal"
-                                value={project.title}
-                                onChange={handleProjectInputs}
-                                error={error.title}
-                                helperText={error.title ? error.title : ''}
+                                value={task.title}
+                                onChange={handleTaskInputs}
                                 InputLabelProps={{ shrink: true }}
                             />
                         </Box>
                         <Box>
-                            <FormLabel>Project Description *</FormLabel>
+                            <FormLabel>Task Description *</FormLabel>
                             <TextField
                                 fullWidth
                                 required
@@ -153,46 +121,30 @@ const CreateProjectModal = ({ open, handleClose }) => {
                                 multiline
                                 rows={4}
                                 margin="normal"
-                                value={project.description}
-                                onChange={handleProjectInputs}
-                                error={error.description}
-                                helperText={error.description ? error.description : ''}
+                                value={task.description}
+                                onChange={handleTaskInputs}
                             />
                         </Box>
-                        <FormControl fullWidth>
-                            <FormLabel sx={{ mb: 1 }}>Project Manager *</FormLabel>
-                            <Select
-                                name="projectManager"
-                                value={project.projectManager}
-                                onChange={handleProjectInputs}
+                        <Box>
+                            <FormLabel>Project Name *</FormLabel>
+                            <TextField
+                                fullWidth
                                 required
-                                fontWeight
-                                displayEmpty
-                            >
-                                <MenuItem value="" disabled>Select Propject Manager</MenuItem>
-                                {
-                                    projectManagerUser?.map((currUser) => {
-                                        return (
-                                            <MenuItem value={currUser.fullName} key={currUser.id}>
-                                                {currUser.fullName}
-                                            </MenuItem>
-                                        )
-                                    })
-                                }
-                            </Select>
-                        </FormControl>
-
-                        <FormControl fullWidth>
-                            <FormLabel sx={{ mb: 1, mt: 2 }}>Engineers *</FormLabel>
+                                name="projectName"
+                                margin="normal"
+                                value={task.description}
+                                onChange={handleTaskInputs}
+                            />
+                        </Box>
+                         <FormControl fullWidth>
+                            <FormLabel sx={{ mb: 1, mt: 2 }}>Assign To *</FormLabel>
                             <Select
                                 multiple
                                 name="engineers"
-                                value={project.engineers}
-                                onChange={handleProjectInputs}
+                                value={task.engineers}
+                                onChange={handleTaskInputs}
                                 required
                                 displayEmpty
-                                error={error.engineers}
-                                helperText={error.engineers ? error.engineers : ''}
                                 renderValue={(selected) => (
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                                         {selected.map((value) => (
@@ -218,13 +170,11 @@ const CreateProjectModal = ({ open, handleClose }) => {
                                 <FormLabel sx={{ mb: 1 }}>Status *</FormLabel>
                                 <Select
                                     name="status"
-                                    value={project.status}
-                                    onChange={handleProjectInputs}
+                                    value={task.status}
+                                    onChange={handleTaskInputs}
                                     required
                                     displayEmpty
                                     sx={{ width: 250 }}
-                                    error={error.status}
-                                    helperText={error.status ? error.status : ''}
                                 >
                                     <MenuItem value="" disabled>Select Status</MenuItem>
                                     <MenuItem value="Yet to be started">Yet to be started</MenuItem>
@@ -238,13 +188,11 @@ const CreateProjectModal = ({ open, handleClose }) => {
                                 <FormLabel sx={{ mb: 1 }}>Priority *</FormLabel>
                                 <Select
                                     name="priority"
-                                    value={project.priority}
-                                    onChange={handleProjectInputs}
+                                    value={task.priority}
+                                    onChange={handleTaskInputs}
                                     required
                                     displayEmpty
                                     sx={{ width: 250 }}
-                                    error={error.priority}
-                                    helperText={error.priority ? error.priority : ''}
                                 >
                                     <MenuItem value="" disabled>Choose Priority</MenuItem>
                                     <MenuItem value="Low">Low</MenuItem>
@@ -253,20 +201,20 @@ const CreateProjectModal = ({ open, handleClose }) => {
                                 </Select>
                             </FormControl>
                         </Stack>
-                        <Stack direction={'row'} spacing={3} sx={{ marginTop: 3 }}>
+                          <Stack direction={'row'} spacing={3} sx={{ marginTop: 3 }}>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <Stack direction={'column'} spacing={0}>
-                                    <FormLabel sx={{ mb: 1 }}>Start Date</FormLabel>
+                                    <FormLabel sx={{ mb: 1 }}>Due Date</FormLabel>
                                     <DatePicker
                                         fullWidth
                                         required
                                         type="date"
                                         name="startDate"
                                         margin="normal"
-                                        value={project.startDate}
+                                        value={task.startDate}
                                         onChange={(newValue) =>
-                                            setProject({
-                                                ...project,
+                                            setTask({
+                                                ...task,
                                                 startDate: newValue,
                                             })
                                         }
@@ -282,17 +230,17 @@ const CreateProjectModal = ({ open, handleClose }) => {
                             </LocalizationProvider>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <Stack direction={'column'} spacing={0} >
-                                    <FormLabel sx={{ mb: 1 }}>End Date</FormLabel>
+                                    <FormLabel sx={{ mb: 1 }}>Estimate Date</FormLabel>
                                     <DatePicker
                                         fullWidth
                                         required
                                         type="date"
                                         name="endDate"
                                         margin="normal"
-                                        value={project.endDate}
+                                        value={task.endDate}
                                         onChange={(newValue) =>
-                                            setProject({
-                                                ...project,
+                                            setTask({
+                                                ...task,
                                                 endDate: newValue,
                                             })
                                         }
@@ -306,15 +254,15 @@ const CreateProjectModal = ({ open, handleClose }) => {
                                     />
                                 </Stack>
                             </LocalizationProvider>
-                        </Stack>
+                        </Stack>             
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
-                    <Button onClick={handleCreateProject} disabled={!isValidProject} sx={{backgroundColor:'#053348', color:'white'}}>Create</Button>
+                    <Button onClick={handleCreateProject} disabled={!isValidProject} sx={{backgroundColor:'#053348', color:'white'}}>Add</Button>
                 </DialogActions>
             </Box>
         </Dialog>
     );
 };
-export default CreateProjectModal
+export default CreateTaskModal;

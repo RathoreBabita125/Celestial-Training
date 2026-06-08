@@ -6,7 +6,9 @@ import { useMutation } from "@apollo/client/react";
 
 const DeleteProjectModal = ({open, handleClose, selectDeleteID, setOpenDelete}) => {
 
-    const [deleteProject] = useMutation(DELETEPROJECT);
+    const [deleteProject] = useMutation(DELETEPROJECT, {
+        refetchQueries:['getProjects']
+    });
     
     const handleDeleteProject = async () => {
         try {

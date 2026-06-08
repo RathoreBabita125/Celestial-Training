@@ -4,13 +4,13 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from "react";
 
 const COLUMN_OPTIONS = [
-    { label: "Name", value: "fullName" },
-    { label: "Email", value: "email" },
-    { label: "Role", value: "role" },
+    { label: "Project Name", value: "title" },
     { label: "Status", value: "status" },
+    { label: "Priority", value: "priority" },
+    { label: "Project Manager", value: "projectManager" },
 ];
 
-const FilterModal = ({ open, onClose, setOpenFilter, setFilter, setPage }) => {
+const FilterProjectModal = ({ open, onClose, setOpenFilter, setFilter, setPage }) => {
     const [column, setColumn] = useState("");
     const [inputValue, setInputValue] = useState("");
 
@@ -18,10 +18,10 @@ const FilterModal = ({ open, onClose, setOpenFilter, setFilter, setPage }) => {
         if (!column) return;
       
         setFilter({
-            fullName: "",
-            email: "",
-            role: "",
+            title: "",
             status: "",
+            priority: "",
+            projectManager: "",
             [column]: inputValue, 
         });
         setPage(0);
@@ -31,7 +31,7 @@ const FilterModal = ({ open, onClose, setOpenFilter, setFilter, setPage }) => {
     const handleReset = () => {
         setColumn("");
         setInputValue("");
-        setFilter({ fullName: "", email: "", role: "", status: "" });
+        setFilter({ title: "", status: "", priority: "", projectManager: "" });
         setPage(0);
     };
     return (
@@ -80,4 +80,4 @@ const FilterModal = ({ open, onClose, setOpenFilter, setFilter, setPage }) => {
         </Dialog>
     );
 };
-export default FilterModal;
+export default FilterProjectModal;
