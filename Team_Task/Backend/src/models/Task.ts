@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Project } from "./Project.ts";
 import { User } from "./User.ts";
+import { Field } from "type-graphql";
 
 @Entity()
 export class Task{
@@ -23,12 +24,14 @@ export class Task{
     dueDate!:Date;
 
     @Column({type:'date'})
-    estDate!:Date
+    estimateDate!:Date
 
-    @ManyToOne(()=>User, (user)=>user.tasks)
-    assignedTo:User | undefined;
-
-    @ManyToOne(()=>Project, (project)=>project.tasks)
-    project:Project | undefined;
+    @Field(() => User)
+    @ManyToOne(()=>User, (user)=>user.tasks, {eager:true})
+    assignedTo!:User;
+    
+    @Field(() => Project)
+    @ManyToOne(()=>Project, (project)=>project.tasks, {eager:true})
+    project!:Project;
 };
 

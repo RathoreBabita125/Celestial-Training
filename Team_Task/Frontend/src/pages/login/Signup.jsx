@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography, TextField, FormControl, InputAdornment, Select, MenuItem, FormHelperText, IconButton } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { useMutation } from '@apollo/client/react';
 import './Login.css';
 import { SIGNUP } from "../../query/query";
@@ -12,6 +12,7 @@ import { validateField } from "../../common/formFieldValidate";
 import { emailInputCheck, phoneInputCheck } from "../../constants/const.js";
 
 const Signup = () => {
+    const navigate=useNavigate();
     const [user, setUser] = useState({
         fullName: '',
         email: '',
@@ -75,11 +76,11 @@ const Signup = () => {
         user?.phone.trim() !== "" &&
         phoneInputCheck.test(user?.phone);
 
-    const handleFormSubmit = async (event) => {
+    const handleSignupButton = async (event) => {
         event.preventDefault();
         const checkValidate = validateInput();
         if (!checkValidate) {
-            return;
+            throw "Invalid Credentials";
         }
         try {
             const response = await signupData({
@@ -91,22 +92,21 @@ const Signup = () => {
                     role: user.role,
                     phone: user.phone
                 }
-            });
+            });      
             if (response) {
                 toast.success("You have successfully signed up.")
+                setUser({
+                    fullName: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: '',
+                    phone: '',
+                    role: '',
+                });
+               navigate('/signin');
             }
-            console.log(response);
-            setUser({
-                fullName: '',
-                email: '',
-                password: '',
-                confirmPassword: '',
-                phone: '',
-                role: '',
-            });
         } catch (error) {
-            console.log(error);
-            toast.error(`${error.message} Please try again`)
+            toast.error(error.message);
         }
     }
     return (
@@ -241,7 +241,7 @@ const Signup = () => {
                                 <Button
                                     className="register-signup-button"
                                     variant="contained"
-                                    onClick={handleFormSubmit}
+                                    onClick={handleSignupButton}
                                     disabled={!checkFormValid}
                                 >
                                     Sign Up

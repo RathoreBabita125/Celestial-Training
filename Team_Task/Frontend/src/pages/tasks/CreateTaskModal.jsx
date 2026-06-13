@@ -1,97 +1,91 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, FormLabel, Box, Typography, Button } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, FormLabel, Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
-import { CREATETASK, GETUSERS } from "../../query/query";
-import { useMutation, useQuery } from "@apollo/client/react";
 import MyButton from "../../common/Button";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { CREATETASK, GETPROJECTS, GETUSERS } from "../../query/query";
+import { useMutation, useQuery } from "@apollo/client/react";
 import LoadingCompo from "../../common/Loader";
 import { toast } from "react-toastify";
 
 const CreateTaskModal = ({ open, handleClose }) => {
-    const [createTask] = useMutation(CREATETASK,
-        {
-            refetchQueries: ['getProjects']
-        }
-    );
-    const { loading, data } = useQuery(GETUSERS);
-    
-    const [task, setTask] = useState({
-        title: '',
-        description: '',
-        assignedTo: [],
-        projectName: [],
-        status: '',
-        priority: '',
-        dueDate: '',
-        estimateDate: ''
-    });
 
-    //loading data
-    if (loading) {
+    const [createTask] = useMutation(CREATETASK,{
+        refetchQueries:['getTasks']
+    });
+    const [task, setTask] = useState({
+        title: "",
+        description: "",
+        projectId: "",
+        assignedTo: "",
+        status: "",
+        priority: "",
+        dueDate: "",
+        estimateDate: ""
+    });
+    const { loading: userLoading, data: userData } = useQuery(GETUSERS);
+    const { loading: projectLoading, data: projectData } = useQuery(GETPROJECTS);
+
+    if (userLoading || projectLoading) {
         return <LoadingCompo />
     }
 
     const handleTaskInputs = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        setTask((preData) => ({ ...preData, [name]: value }));
+        setTask((preTask) => ({ ...preTask, [name]: value }));
     }
 
-    // check validate
-    const isValidProject =
+    //validate 
+    const isValidTask =
         task?.title.trim() !== "" &&
         task?.description.trim()!=="" &&
-        task?.assignedTo.trim()!=="" &&
-        task.projectName.trim()!==""&&
+        task?.status.trim()!=="" &&
         task?.priority.trim()!==""&&
-        task?.status.trim()!==""&&
+        task.assignedTo &&
+        task.projectId &&
         task.dueDate &&
-        task.estDate 
+        task.estimateDate
 
-    // handle create project click
-    const handleCreateProject = async () => {
+    // engineer profile data
+    const allEngineers = userData.users.filter((user) => {
+        return user.role === "Engineer";
+    })
+
+    const addTaskHandler = async () => {
         try {
-            const response = await createTask({
+            const response = createTask({
                 variables: {
                     title: task.title,
                     description: task.description,
                     assignedTo: task.assignedTo,
-                    projectName: task.projectName,
-                    priority: task.priority,
+                    projectId: task.projectId,
                     status: task.status,
+                    priority: task.priority,
                     dueDate: task.dueDate,
-                    estDate: task.estDate,
+                    estimateDate: task.estimateDate
                 }
-            });
-            setTask({
-                title: '',
-                description: '',
-                assignedTo: [],
-                projectName: [],
-                status: '',
-                priority: '',
-                dueDate: '',
-                estimateDate: ''
             });
 
             if (response) {
-                toast.success("Task has been successfully created.");
+                toast.success("Task has been created successfully");
+                setTask({
+                    title: "",
+                    description: "",
+                    projectId: "",
+                    assignedTo: "",
+                    status: "",
+                    priority: "",
+                    dueDate: "",
+                    estimateDate: ""
+                })
                 handleClose();
             }
         } catch (error) {
-            console.log(error);
             toast.error(error.message);
-        };
-    };
-
-
-    //fetch engineer from user
-    const engineerUsers = data?.users?.filter((currUser) => {
-        return currUser.role === 'Engineer';
-    });
-    console.log(engineerUsers)
+        }
+    }
 
 
     return (
@@ -125,44 +119,40 @@ const CreateTaskModal = ({ open, handleClose }) => {
                                 onChange={handleTaskInputs}
                             />
                         </Box>
-                        <Box>
-                            <FormLabel>Project Name *</FormLabel>
-                            <TextField
-                                fullWidth
-                                required
-                                name="projectName"
-                                margin="normal"
-                                value={task.description}
-                                onChange={handleTaskInputs}
-                            />
-                        </Box>
-                         <FormControl fullWidth>
-                            <FormLabel sx={{ mb: 1, mt: 2 }}>Assign To *</FormLabel>
+                        <FormControl fullWidth>
+                            <FormLabel sx={{ mb: 1, mt: 2 }}>Project Name *</FormLabel>
                             <Select
-                                multiple
-                                name="engineers"
-                                value={task.engineers}
+                                name="projectId"
+                                value={task.projectName}
                                 onChange={handleTaskInputs}
                                 required
                                 displayEmpty
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Typography key={value} >{value}</Typography>
-                                        ))}
-                                    </Box>
-                                )}
                             >
-                                <MenuItem value="" disabled>Select Engineers</MenuItem>
+                                <MenuItem value="" disabled>Select Project</MenuItem>
                                 {
-                                    engineerUsers?.map((currUser, index) => {
-                                        return (
-                                            <MenuItem value={currUser.fullName} key={currUser.id}>
-                                                {index + 1}. {currUser.fullName}
-                                            </MenuItem>
-                                        )
-                                    })
+                                    projectData?.projects?.map((project, index) => (
+                                        <MenuItem value={project.id} key={project.id}>
+                                            {index + 1}. {project.title}
+                                        </MenuItem>
+                                    ))
                                 }
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth>
+                            <FormLabel sx={{ mb: 1, mt: 2 }}>Assign To *</FormLabel>
+                            <Select
+                                name="assignedTo"
+                                value={task.assignedTo}
+                                onChange={handleTaskInputs}
+                                required
+                                displayEmpty
+                            >
+                                <MenuItem value="" disabled>Select Engineer</MenuItem>
+                                {allEngineers?.map((engineer) => (
+                                    <MenuItem value={engineer.id}>
+                                        {engineer.fullName}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                         <Stack direction={'row'} spacing={3} sx={{ marginTop: 3 }}>
@@ -201,7 +191,7 @@ const CreateTaskModal = ({ open, handleClose }) => {
                                 </Select>
                             </FormControl>
                         </Stack>
-                          <Stack direction={'row'} spacing={3} sx={{ marginTop: 3 }}>
+                        <Stack direction={'row'} spacing={3} sx={{ marginTop: 3 }}>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <Stack direction={'column'} spacing={0}>
                                     <FormLabel sx={{ mb: 1 }}>Due Date</FormLabel>
@@ -211,11 +201,11 @@ const CreateTaskModal = ({ open, handleClose }) => {
                                         type="date"
                                         name="startDate"
                                         margin="normal"
-                                        value={task.startDate}
+                                        value={task.dueDate}
                                         onChange={(newValue) =>
                                             setTask({
                                                 ...task,
-                                                startDate: newValue,
+                                                dueDate: newValue,
                                             })
                                         }
                                         slotProps={
@@ -237,11 +227,11 @@ const CreateTaskModal = ({ open, handleClose }) => {
                                         type="date"
                                         name="endDate"
                                         margin="normal"
-                                        value={task.endDate}
+                                        value={task.estimateDate}
                                         onChange={(newValue) =>
                                             setTask({
                                                 ...task,
-                                                endDate: newValue,
+                                                estimateDate: newValue,
                                             })
                                         }
                                         slotProps={
@@ -254,12 +244,16 @@ const CreateTaskModal = ({ open, handleClose }) => {
                                     />
                                 </Stack>
                             </LocalizationProvider>
-                        </Stack>             
+                        </Stack>
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
-                    <Button onClick={handleCreateProject} disabled={!isValidProject} sx={{backgroundColor:'#053348', color:'white'}}>Add</Button>
+                    <Button
+                        sx={{ backgroundColor: '#053348', color: 'white' }}
+                        onClick={addTaskHandler}
+                        disabled={!isValidTask}
+                    >Add</Button>
                 </DialogActions>
             </Box>
         </Dialog>

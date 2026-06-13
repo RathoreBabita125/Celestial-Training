@@ -11,20 +11,15 @@ import { resolvers } from "./src/controllers/resolver.ts";
 import { typeDefs } from "./src/schema/typedefine.ts";
 import { expressMiddleware } from "@as-integrations/express5";
 import cookieParser from "cookie-parser";
-import session from 'express-session';
-import passport from 'passport';
-import jwt from 'jsonwebtoken'
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { AuthMiddleware } from "./src/middlewares/authMiddleware.ts";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
-const secretKey = process.env.PRIVATE_KEY || "My-Secret-Key";
 const app = express();
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 app.use(cookieParser());
+app.use(cors({origin:"http://localhost:5173",credentials:true}));
 
 export const AppDataSource = new DataSource({
     host: 'localhost',
@@ -38,7 +33,6 @@ export const AppDataSource = new DataSource({
 });
 
 const startServer = async () => {
-
     AppDataSource.initialize()
         .then(() => {
             console.log('Database is connected successfully');
@@ -51,52 +45,18 @@ const startServer = async () => {
         typeDefs,
         resolvers,
     });
-
     await server.start();
-
-    app.use(
-        session({
-            secret: secretKey,
-            resave: false,
-            saveUninitialized: true
-        })
-    );
-
-    app.use(passport.initialize());
-    app.use(passport.session());
-
-    passport.use(
-        new GoogleStrategy(
-            {
-                clientID: process.env.GOOGLE_CLIENT_ID!,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-                callbackURL: 'http://localhost:5000/auth/google/callback',
-            },
-            (accessToken, refreshToken, profile: any, done: any) => {
-                return done(null, profile)
-            }
-        )
-    );
-
-    passport.serializeUser((user, done) => done(null, user));
-    passport.deserializeUser((user: User, done) => done(null, user));
-
-    app.get('/auth/google',
-        passport.authenticate('google', { scope: ['profile'] })
-    );
-    app.get('/auth/google/callback',
-        passport.authenticate('google', { failureRedirect: '/signin' }),
-        function (req, res) {
-            res.redirect('/');
-        }
-    );
     app.use('/graphql',
         expressMiddleware(server, {
-            context: async ({ req, res }) => ({
-                req, 
-                res,
-                db:AppDataSource
-            })
+            context: async ({ req, res}) => {
+                const auth=AuthMiddleware(req, res);
+                return{
+                    req, 
+                    res,
+                    db:AppDataSource,
+                    user:auth?.decoded
+                }
+            }
         })
     );
     app.listen(PORT, () => {
@@ -104,4 +64,3 @@ const startServer = async () => {
     });
 }
 startServer();
-

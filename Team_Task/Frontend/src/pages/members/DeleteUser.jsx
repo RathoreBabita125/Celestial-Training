@@ -22,16 +22,15 @@ const DeleteUser = ({ open, handleClose, setOpenDelete, deleteUser }) => {
                 setOpenDelete(false);
             }
         } catch (error) {
-            console.log(error);
             toast.error(error.message);
         }
     }
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"30%"}}>
-            <Box sx={{ padding: 3 }}>
+            <Box sx={{ padding: 2 }}>
                 <DialogContent>
-                   <Typography variant="h5" color="initial">Are you sure? You want to delete this user.</Typography>
+                   <Typography variant="h6" color="initial">Are you sure? You want to delete this user.</Typography>
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={() => setOpenDelete(false)} name="Cancel" />

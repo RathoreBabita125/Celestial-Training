@@ -68,7 +68,6 @@ const CreateProjectModal = ({ open, handleClose }) => {
         project.startDate &&
         project.endDate
         
-
     // handle create project click
     const handleCreateProject = async () => {
         const checkValidate = validateProjectInputs();
@@ -103,7 +102,6 @@ const CreateProjectModal = ({ open, handleClose }) => {
                 handleClose();
             }
         } catch (error) {
-            console.log(error);
             toast.error(error.message);
         };
     };
@@ -122,7 +120,6 @@ const CreateProjectModal = ({ open, handleClose }) => {
     const engineerUsers = data?.users?.filter((currUser) => {
         return currUser.role === 'Engineer';
     });
-
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">

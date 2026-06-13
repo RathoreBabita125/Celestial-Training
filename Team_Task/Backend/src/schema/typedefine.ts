@@ -31,20 +31,28 @@ export const typeDefs=gql`
         priority:String!
         startDate:Date!
         endDate:Date!
+        tasks:[Task]
     }
     type Task{
         id: ID!
         title: String!
         description:String!
         status:String!
-        message:String
-        user:User
+        priority:String
+        assignedTo:User
         project:Project
+        dueDate:String
+        estimateDate:String
     }
     type AuthResponse{
         user:User
         token:String
     }
+    
+    type LogoutResponse{
+        message:String!
+    }
+
     type Query{
         users(
             fullName: String
@@ -53,6 +61,8 @@ export const typeDefs=gql`
             role: String
         ):[User]
 
+        getMe:User
+
         projects(
             title:String
             status:String
@@ -60,8 +70,11 @@ export const typeDefs=gql`
             projectManager:String
         ):[Project]
 
+        getProjectDetails:[Project]
+
         tasks:[Task]
     }
+
     type Mutation{
         signup(
             id:ID
@@ -84,7 +97,7 @@ export const typeDefs=gql`
             confirmPassword:String!
         ):AuthResponse
       
-        logout:String!  
+        logout:LogoutResponse!  
 
         authWithGoogle(
             token:String!
@@ -129,6 +142,8 @@ export const typeDefs=gql`
             description:String
             status:String
             priority:String
+            startDate:Date!
+            endDate:Date!
         ):Project
 
         deleteProject(
@@ -139,8 +154,11 @@ export const typeDefs=gql`
             title:String!
             description:String!
             status:String!
+            priority:String!    
             projectId:ID!
-            userId:ID!
+            assignedTo:ID!
+            dueDate:Date!
+            estimateDate:Date!
         ):Task
 
         updateTask(
@@ -148,8 +166,11 @@ export const typeDefs=gql`
             title:String!
             description:String!
             status:String!
+            priority:String!
             projectId:ID!
-            userId:ID!
+            assignedTo:ID!
+            dueDate:Date!
+            estimateDate:Date!
         ):Task
 
         deleteTask(

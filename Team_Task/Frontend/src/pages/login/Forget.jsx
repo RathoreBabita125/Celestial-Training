@@ -82,9 +82,7 @@ const Forget = () => {
                     confirmPassword: ''
                 })
             }
-            console.log(response);
         } catch (error) {
-            console.log(error);
             toast.error("Reset Password failed. Please try again")
         }
     }

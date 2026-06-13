@@ -56,11 +56,9 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                 role: '',
             });
         } catch (error) {
-            console.log(error);
             toast.error(error.message);
         }
-    }
-    
+    }   
     const isFormValid =
         user.email !== "" &&
         emailInputCheck.test(user.email) &&
@@ -71,7 +69,7 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
         phoneInputCheck.test(user.phone)
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"40%"}}>
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"30%"}}>
             <Box sx={{ padding: 3 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 22 }}>Update Existing User</DialogTitle>
                 <DialogContent>

@@ -49,9 +49,38 @@ export const resolvers = {
             }
             return await projectRepo.find({ where })
         },
-        
+
+        getProjectDetails: async () => {
+            const projectRepo = AppDataSource.getRepository(Project);
+            return await projectRepo.find({
+                relations: {
+                    tasks: true
+                }
+            })
+        },
+
         tasks: async () => {
             return await AppDataSource.getRepository(Task).find();
+        },
+
+        getMe: async (_: any, __: any, context: any) => {
+            try {
+                 console.log(context.user)
+                if (!context.user) {
+                    return null
+                }
+                const userRepo = AppDataSource.getRepository(User);
+                const user = await userRepo.findOne({
+                    where: {
+                        id:Number(context.user.id)
+                    }
+                });
+                console.log("db user", user)
+                return user
+                
+            } catch (error) {
+                return null;
+            }
         }
     },
     Mutation: {
@@ -108,7 +137,6 @@ export const resolvers = {
             }
 
             if (findUser) {
-                console.log(`you are already existed: ${userData.fullName} you can login.`);
                 return {
                     email: userData.email,
                     message: "You are already existed. Please login"
@@ -162,9 +190,11 @@ export const resolvers = {
                 throw new Error("Email or password does not exist");
             };
 
-            const token = generateTokens(user.id);
+            const token = generateTokens({ id: user.id, role: user.role });
             context.res.cookie("token", token, {
-                httpOnly: true
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax"
             });
             return {
                 user,
@@ -192,13 +222,17 @@ export const resolvers = {
             user.password = hashedPassword;
             await userRepo.save(user);
             return {
-                message: "You have successfully updated password"
+                user
             }
         },
 
         logout: async (_: any, __: any, context: any) => {
-            context.res.clearCookie("token", { httpOnly: true });
-            return "You have successfully logged out";
+            context.res.clearCookie("token", {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax"
+            });
+            return "Successfully logged out!"
         },
 
         authWithGoogle: async (_: any, { token }: { token: string }, { db }: { db: any }) => {
@@ -240,7 +274,6 @@ export const resolvers = {
                     user
                 };
             } catch (error) {
-                console.log(error)
                 throw new Error('Authentication failed');
             }
         },
@@ -461,37 +494,33 @@ export const resolvers = {
             const taskRepo = AppDataSource.getRepository(Task);
 
             if (!taskData.title || taskData.title.trim() === "") {
-                throw new Error('Please enter title name.');
+                throw new Error('Please enter task name.');
             }
             if (!taskData.description || taskData.description.trim() === "") {
-                throw new Error('Please enter description');
+                throw new Error('Please enter task description.');
             }
             if (!taskData.status) {
-                throw new Error('Please provide the status of the task');
+                throw new Error('Please provide the status of the task.');
             }
             if (!taskData.priority) {
-                throw new Error('Please provide the priority of the task');
-            }
-            if (!taskData.projectId) {
-                throw new Error('Please provide project id for the task');
-            }
-            if (!taskData.userId) {
-                throw new Error('Please provide user id for the task');
+                throw new Error('Please provide the priority of the task.');
             }
 
-            const user = await userRepo.findOne({ where: { id: Number(taskData.userId) } });
+            const user = await userRepo.findOne({ where: { id: Number(taskData.assignedTo) } });
             const project = await projectRepo.findOne({ where: { id: Number(taskData.projectId) } });
 
             if (!user || !project) {
                 throw new Error("User or Project not found");
             }
-
             const task = taskRepo.create({
                 title: taskData.title,
                 description: taskData.description,
                 status: taskData.status,
+                priority: taskData.priority,
                 assignedTo: user,
-                project: project
+                project: project,
+                dueDate: taskData.dueDate,
+                estimateDate: taskData.estimateDate
             });
             return await taskRepo.save(task);
         },
@@ -501,7 +530,13 @@ export const resolvers = {
                 throw new Error("Task id is required");
             }
             const taskRepo = AppDataSource.getRepository(Task);
-            const task = await taskRepo.findOne({ where: { id: taskData.id } });
+            const task = await taskRepo.findOne({
+                where: { id: taskData.id },
+                relations: {
+                    assignedTo: true,
+                    project: true,
+                },
+            });
 
             if (!taskData.title || taskData.title.trim() === "") {
                 throw new Error('Please enter title name.');
@@ -509,13 +544,16 @@ export const resolvers = {
             if (!taskData.description || taskData.description.trim() === "") {
                 throw new Error('Please enter description');
             }
-            if (!taskData.status || taskData.status.trim() === "") {
+            if (!taskData.status) {
+                throw new Error('Please provide the status of the task');
+            }
+            if (!taskData.priority) {
                 throw new Error('Please provide the status of the task');
             }
             if (!taskData.projectId) {
                 throw new Error('Please provide project id for the task');
             }
-            if (!taskData.userId) {
+            if (!taskData.assignedTo) {
                 throw new Error('Please provide user id for the task');
             }
 
@@ -531,7 +569,31 @@ export const resolvers = {
             if (taskData.status !== undefined) {
                 task.status = taskData.status;
             }
-            return await taskRepo.save(task);
+            if (taskData.priority !== undefined) {
+                task.priority = taskData.priority;
+            }
+            if (taskData.assignedTo !== undefined) {
+                task.assignedTo = taskData.assignedTo;
+            }
+            if (taskData.projectId !== undefined) {
+                task.project = taskData.projectId;
+            }
+            if (taskData.dueDate !== undefined) {
+                task.dueDate = taskData.dueDate;
+            }
+            if (taskData.estimateDate !== undefined) {
+                task.estimateDate = taskData.estimateDate;
+            }
+
+            await taskRepo.save(task);
+            const updatedTask = await taskRepo.findOne({
+                where: { id: task.id },
+                relations: {
+                    assignedTo: true,
+                    project: true,
+                },
+            });
+            return updatedTask;
         },
 
         deleteTask: async (_: any, taskData: any) => {
@@ -540,10 +602,9 @@ export const resolvers = {
             if (!task) {
                 throw new Error("Task does not Exist");
             }
+            const deletedTask = { ...task };
             await taskRepo.remove(task);
-            return {
-                message: "Task is deleted successfully"
-            }
+            return deletedTask;
         },
     }
 }

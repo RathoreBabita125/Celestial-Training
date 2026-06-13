@@ -4,7 +4,7 @@ const MyButton = ({handler, name}) => {
     return (
         <Button
             variant="contained"
-            sx={{backgroundColor:'#053348'}}
+            sx={{backgroundColor:'#053348', maxWidth:200, p:1.5}}
             onClick={handler}>
             {name}
         </Button>

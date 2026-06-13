@@ -19,7 +19,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
     const [editProject, setEditProject] = useState({
         title: '',
         projectManager: '',
-        engineers: [],
+        engineers: '',
         description: '',
         status: '',
         priority: '',
@@ -34,13 +34,23 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
     });
 
     useEffect(() => {
-        setEditProject(selectedProject)
+        setEditProject(
+            {
+                title: selectedProject.title,
+                projectManager: selectedProject.projectManager,
+                engineers: selectedProject.engineers,
+                description: selectedProject.description,
+                status: selectedProject.status,
+                priority: selectedProject.priority,
+                startDate: new Date(selectedProject.startDate),
+                endDate: new Date(selectedProject.endDate)
+            }
+        )
     }, [selectedProject])
 
     if (loading) {
         return <LoadingCompo />
     }
-
 
     //input handler
     const handleProjectInputs = (event) => {
@@ -49,70 +59,31 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
         setEditProject((preData) => ({ ...preData, [name]: value }));
     };
 
-    //validation
-    const validateProjectInputs = () => {
-        const newError = {};
-        if (!editProject.title || editProject.title.trim() === "") {
-            newError.title = "Title field is required.";
-        }
-        if (!editProject.description || editProject.description.trim() === "") {
-            newError.description = "Description field is required.";
-        }
-        if (!editProject.status || editProject.status.trim() === "") {
-            newError.status = "Status field is required";
-        }
-        if (!editProject.priority) {
-            newError.status = "Priority field is required";
-        }
-        setError(newError);
-        return Object.keys(newError).length === 0;
-    }
-
     //handle edit button
     const handleEditProjectBTN = async () => {
-        const validateInputs = validateProjectInputs();
-        if (!validateInputs) {
-            throw new Error("Enter valid details");
-        }
         try {
-            data?.projects?.filter((currProject) => {
-                if (currProject.id === selectedProject.id) {
-                    setEditProject((preData) => (
-                        {
-                            ...preData,
-                            id: currProject.id,
-                            title: currProject.title,
-                            description: currProject.description,
-                            projectManager: currProject.projectManager,
-                            status: currProject.status,
-                            priority: currProject.priority,
-                            startDate: currProject.startDate,
-                            endDate: currProject.endDate
-                        }
-                    ))
-                }
-            });
             const response = await updateProject({
                 variables: {
-                    id: editProject.id,
                     title: editProject.title,
-                    description: editProject.description,
                     projectManager: editProject.projectManager,
                     engineers: editProject.engineers,
+                    description: editProject.description,
                     status: editProject.status,
                     priority: editProject.priority,
-                    startDate: editProject.startDate,
-                    endDate: editProject.endDate
+                    startDate: new Date(editProject.startDate),
+                    endDate: new Date(editProject.endDate)
                 }
             });
-            console.log(editProject.startDate);
-            console.log(editProject.title);
             if (response) {
                 setEditProject({
-                    title: "",
-                    description: "",
-                    status: "",
-                    priority: ""
+                    title: '',
+                    projectManager: '',
+                    engineers: '',
+                    description: '',
+                    status: '',
+                    priority: '',
+                    startDate: '',
+                    endDate: ''
                 });
                 handleClose()
             }
@@ -134,7 +105,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
     const isValidProject =
         editProject?.title !== "" &&
         editProject?.description !== "" &&
-        editProject?.status!== "" &&
+        editProject?.status !== "" &&
         editProject?.priority !== "" &&
         editProject.engineers &&
         editProject.projectManager !== "" &&
@@ -142,7 +113,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
         editProject.endDate
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{ opacity: "60%" }}>
             <Box sx={{ padding: 2 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Edit Existing Project</DialogTitle>
                 <DialogContent>
@@ -330,7 +301,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
-                    <Button onClick={handleEditProjectBTN} disabled={isValidProject} sx={{backgroundColor:'#053348', color:'white'}}>Edit</Button>
+                    <Button onClick={handleEditProjectBTN} disabled={isValidProject} sx={{ backgroundColor: '#053348', color: 'white' }}>Edit</Button>
                 </DialogActions>
             </Box>
         </Dialog>

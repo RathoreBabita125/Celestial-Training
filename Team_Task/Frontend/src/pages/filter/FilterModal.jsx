@@ -16,7 +16,6 @@ const FilterModal = ({ open, onClose, setOpenFilter, setFilter, setPage }) => {
 
     const handleApply = () => {
         if (!column) return;
-      
         setFilter({
             fullName: "",
             email: "",

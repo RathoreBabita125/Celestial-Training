@@ -1,24 +1,24 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import Home from './components/Home';
 import Signup from './pages/login/Signup';
 import Signin from './pages/login/Signin';
 import Forget from './pages/login/Forget';
-import Home from './components/Home';
 import Dashboard from "./pages/dashboard/Dashboard";
-import Project from "./pages/dashboard/Project";
-import Calender from "./pages/dashboard/Calender";
-import DashHome from "./pages/dashboard/Home";
 import Activity from "./pages/dashboard/Activity";
 import Message from "./pages/dashboard/Message";
-import Task from "./pages/dashboard/Task";
-import Team from "./pages/dashboard/Team";
-// import Inbox from "./pages/dashboard/Inbox";
-import CreateTask from "./pages/tasks/CreateTask";
-import ViewTask from "./pages/tasks/ViewTask";
-import EditTask from "./pages/tasks/EditTask";
-import DeleteTask from "./pages/tasks/DeleteTask";
-import UserManagement from "./pages/dashboard/UserManagement";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from "react-toastify";
+import Project from "./pages/admin/Project";
+import Team from "./pages/admin/Team";
+import Calender from "./pages/calender/Calender";
+import UserManagement from "./pages/admin/UserManagement";
+import ManagerHome from "./pages/projectManager/ManagerHome";
+import ManagerProjects from "./pages/projectManager/ManagerProjects";
+import ManagerTasks from "./pages/projectManager/ManagerTasks";
+import UnAuthorizedPage from "./components/UnAuthorizedPage";
+import ProtectedRoute from "./pages/protectedRoutes/ProtectedRoutes";
+import RoleBasedHome from "./pages/dashboard/RoleBasedHome";
+import ManagerTeam from "./pages/projectManager/ManagerTeam";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
@@ -29,58 +29,80 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path:'/dashboard',
-        element:<Dashboard/>,
-        children:[
+        path: '/unauthorized',
+        element: <UnAuthorizedPage />
+      },
+      {
+        path: '/dashboard',
+        element: (
+          <ProtectedRoute allowedRoles={['Admin', 'Project Manager', 'Engineer']}>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+        children: [
           {
-            path:'',
-            element:<DashHome/>
+            path: '',
+            element: <RoleBasedHome />
           },
           {
-            path:'usermanagement',
-            element:<UserManagement/>
+            path: 'user-management',
+            element: <UserManagement />
           },
           {
-            path:'project',
-            element:<Project/>
+            path: 'project-management',
+            element: <Project />
           },
           {
-            path:'task',
-            element:<Task/>,
-            children:[
-              {
-                path:'createtask',
-                element:<CreateTask/>
-              },
-              {
-                path:'deletetask',
-                element:<DeleteTask/>
-              },
-              {
-                path:'edittask',
-                element:<EditTask/>
-              },
-              {
-                path:'viewtask',
-                element:<ViewTask/>
-              },
-            ]
+            path: 'team',
+            element: <Team />
           },
           {
-            path:'team',
-            element:<Team/>
+            path: 'projects',
+            element: (
+              <ProtectedRoute allowedRoles={['Project Manager']}>
+                <ManagerProjects />
+              </ProtectedRoute>
+            ),
           },
           {
-            path:'calender',
-            element:<Calender/>
+            path: 'tasks',
+            element: (
+              <ProtectedRoute allowedRoles={['Project Manager']}>
+                <ManagerTasks />
+              </ProtectedRoute>
+            ),
           },
           {
-            path:'message',
-            element:<Message/>
+            path: 'teams',
+            element: (
+              <ProtectedRoute allowedRoles={['Project Manager']}>
+                <ManagerTeam />
+              </ProtectedRoute>
+            ),
           },
           {
-            path:'activity',
-            element:<Activity/>
+            path: 'calender',
+            element: (
+              <ProtectedRoute allowedRoles={['Admin', 'Project Manager', 'Engineer']}>
+                <Calender />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'message',
+            element: (
+              <ProtectedRoute allowedRoles={['Admin', 'Project Manager', 'Engineer']}>
+                <Message />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'activity',
+            element: (
+              <ProtectedRoute allowedRoles={['Admin', 'Project Manager', 'Engineer']}>
+                <Activity />
+              </ProtectedRoute>
+            ),
           },
         ]
       },
@@ -103,10 +125,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-    <RouterProvider router={router}>
-    </RouterProvider>
-     <ToastContainer />
-
+      <RouterProvider router={router}>
+      </RouterProvider>
+      <ToastContainer />
     </>
   )
 };

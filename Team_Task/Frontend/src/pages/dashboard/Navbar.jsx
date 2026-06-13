@@ -7,58 +7,71 @@ import { LOGOUT } from "../../query/query";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router";
-
+import { useApolloClient } from "@apollo/client/react";
+import ProfileModal from "../../common/ProfileModal";
 
 const DashNavbar = () => {
-    const { loginUserData } = useContext(AuthContext);
-    const [anchorElUser, setAnchorElUser] = useState(null);
-    const [logout]=useMutation(LOGOUT);
-    const navigate=useNavigate();
-    const {theme} = useContext(AuthContext)
-    const themeColor=theme ? "darkMode" : "lightMode"; 
+
+    const { userAuth } = useContext(AuthContext);
+    const [userProfile, setUserProfile] = useState(null);
+    const [openProfile, setOpenProfile] = useState(false);
+    const [logout] = useMutation(LOGOUT);
+    const navigate = useNavigate();
+    const { theme } = useContext(AuthContext);
+    const client=useApolloClient();
+
+    const themeColor = theme ? "darkMode" : "lightMode";
 
     const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
+        setUserProfile(event.currentTarget);
     };
     const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
+        setUserProfile(null);
     };
 
     const handleLogoutBTN = async () => {
         try {
+            console.log("logout");
             await logout();
-            navigate("/");
+            // await client.clearStore();
+            await client.resetStore();
+            navigate('/signin', {replace:true});
         } catch (error) {
-            console.log(error);
+            navigate('/signin', {replace:true});
+            console.log(error);  
         };
     };
 
-    const handleDashboard=()=>{
+    //handle close modal
+    const handleCloseProfile = () => {
+        setOpenProfile(false)
+    }
+    const handleDashboard = () => {
         navigate("/dashboard");
     }
 
     return (
         <>
-            <AppBar position='relative' className={`dashboard-navbar ${themeColor}`}>
+            <AppBar position='relative' className={`dashboard-navbar`}>
                 <Toolbar className='dashboard-toolbar'>
                     <Box className="dashboard-navbar-items" >
                         <Box className="dashboard-navbar-input">
                         </Box>
                         <Stack direction={'row'} spacing={12}>
                             <Box className={`dashboard-navbar-text`}>
-                                <Button className={`${themeColor}`}>Feedback</Button>
-                                <NotificationsIcon sx={{ cursor: 'pointer' }}  className={`${themeColor}`}/>
+                                <Button >Feedback</Button>
+                                <NotificationsIcon sx={{ cursor: 'pointer' }} />
                             </Box>
                             <Tooltip>
                                 <IconButton onClick={handleOpenUserMenu}>
-                                    <Avatar className={`${themeColor}`}>
-                                        {loginUserData?.fullName?.[0].toUpperCase()}
+                                    <Avatar sx={{ backgroundColor: '#053348', color: 'white' }}>
+                                        {userAuth?.fullName?.[0].toUpperCase()}
                                     </Avatar>
                                 </IconButton>
                                 <Menu
                                     sx={{ mt: '55px' }}
                                     id="menu-appbar"
-                                    anchorEl={anchorElUser}
+                                    userProfile={userProfile}
                                     anchorOrigin={{
                                         vertical: 'top',
                                         horizontal: 'right',
@@ -68,17 +81,22 @@ const DashNavbar = () => {
                                         vertical: 'top',
                                         horizontal: 'right',
                                     }}
-                                    open={Boolean(anchorElUser)}
+                                    open={Boolean(userProfile)}
                                     onClose={handleCloseUserMenu}
                                 >
-                                    <MenuItem onClick={handleCloseUserMenu}>
-                                        <Typography sx={{ textAlign: 'center' }}>Profile</Typography>
+                                    <MenuItem>
+                                        <Typography sx={{ textAlign: 'center' }} onClick={()=>setOpenProfile(true)}>Profile</Typography>
+                                        {/* <ProfileModal
+                                            open={openProfile}
+                                            onClose={handleCloseProfile}
+                                            setOpenProfile={setOpenProfile}
+                                        /> */}
                                     </MenuItem>
-                                    <MenuItem onClick={handleCloseUserMenu}>
+                                    <MenuItem>
                                         <Typography sx={{ textAlign: 'center' }} onClick={handleDashboard}>Dashboard</Typography>
                                     </MenuItem>
-                                    <MenuItem onClick={handleCloseUserMenu}>
-                                        <Box sx={{display:"flex", alignItems:"center", gap:1}}>
+                                    <MenuItem>
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                             <LogoutIcon fontSize="30px" />
                                             <Typography onClick={handleLogoutBTN}>Logout</Typography>
                                         </Box>

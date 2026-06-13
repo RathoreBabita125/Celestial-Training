@@ -42,7 +42,19 @@ export const LOGIN = gql`
 `;
 export const LOGOUT = gql`
     mutation logout{
-        logout
+        logout{
+            message
+        }
+    }
+`
+export const GETME=gql`
+    query getMe{
+        getMe{
+            id
+            fullName
+            role
+            email
+        }
     }
 `
 export const GOOGLE_AUTH_MUTATION = gql`
@@ -211,6 +223,29 @@ export const GETPROJECTS = gql`
         }
     }
 `
+
+export const GETPROJECTDETAILS = gql`
+    query getProjectDetails{
+        getProjectDetails{
+            id
+            title
+            projectManager
+            endDate
+            status
+            priority
+            tasks{
+                title
+                status
+                assignedTo{
+                    fullName
+                    role
+                    email
+                }
+            }
+        }  
+    }
+`
+
 export const UPDATEPROJECT = gql`
     mutation updateProject(
         $id:ID!
@@ -249,43 +284,60 @@ export const DELETEPROJECT = gql`
 `
 export const CREATETASK = gql`
     mutation createTask(
-        $userId:ID!
-        $projectId:ID!
         $title:String!
         $description:String!
+        $assignedTo:ID!
+        $projectId:ID!
         $status:String!
+        $priority:String!
+        $dueDate:Date!
+        $estimateDate:Date!
     ){
         createTask(
-            userId:$userId
-            projectId:$projectId
             title:$title
             description:$description
+            assignedTo:$assignedTo
+            projectId:$projectId
             status:$status
+            priority:$priority
+            dueDate:$dueDate
+            estimateDate:$estimateDate
         ){
             title
             description
             status
-            user{
+            priority
+            dueDate
+            estimateDate
+            assignedTo{
                 id
+                fullName
             }
             project{
                 id
+                title
             }
         }
     }
 `
+
 export const GETTASKS = gql`
     query getTasks{
-        getTasks{
+        tasks{
             id
             title
             description
             status
-            user{
+            priority
+            dueDate
+            estimateDate
+            assignedTo{
                 id
+                fullName
             }
             project{
                 id
+                title
             }
         }
     }
@@ -293,37 +345,52 @@ export const GETTASKS = gql`
 export const UPDATETASK = gql`
     mutation updateTask(
         $id:ID!
-        $userId:ID!
-        $projectId:ID!
         $title:String!
         $description:String!
         $status:String!
-    ){
+        $priority:String!
+        $assignedTo:ID!
+        $projectId:ID!
+        $dueDate:Date!
+        $estimateDate:Date!
+        ){
         updateTask(
             id:$id
-            userId:$userId
-            projectId:$projectId
             title:$title
             description:$description
+            assignedTo:$assignedTo
+            projectId:$projectId
             status:$status
+            priority:$priority
+            dueDate:$dueDate
+            estimateDate:$estimateDate
         ){
             id
-            userId
-            projectId
             title
             description
             status
+            priority
+            assignedTo{
+                id
+                fullName
+            }
+            project{
+                id
+                title
+            }
         }
     }
 `
 
 export const DELETETASK = gql`
     mutation deleteTask(
-        $id:ID
+        $id:ID!
     ){
         deleteTask(
             id:$id
-        )
+        ){
+            id
+        }
     }
 `
 

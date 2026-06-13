@@ -7,14 +7,17 @@ import { client } from './client/client.js';
 import { AuthContextProvider } from './context/AuthContext';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { FilterContextProvider } from './context/FilterContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <ApolloProvider client={client}>
-        <AuthContextProvider>
-          <App />
-        </AuthContextProvider>
+        <FilterContextProvider>
+          <AuthContextProvider>
+            <App />
+          </AuthContextProvider>
+        </FilterContextProvider>
       </ApolloProvider>
     </LocalizationProvider>
   </StrictMode>,

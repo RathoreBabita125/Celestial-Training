@@ -1,21 +1,21 @@
 import { Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
-import { Link, useNavigate } from "react-router";
-import { useContext, useState } from "react";
-import { useMutation } from "@apollo/client/react";
-import { LOGIN } from "../../query/query";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation} from "@apollo/client/react";
+import {  LOGIN } from "../../query/query";
 import './Login.css';
-import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { validateField } from "../../common/formFieldValidate";
 import { emailInputCheck } from "../../constants/const";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const Signin = () => {
-    const { setLoginUserData } = useContext(AuthContext);
-    const [showVisible, setShowVisible] = useState(false);
     const navigate = useNavigate();
+    const [showVisible, setShowVisible] = useState(false);
+    const { refetch } = useContext(AuthContext);
     const [user, setUser] = useState({
         email: "",
         password: ""
@@ -33,12 +33,11 @@ const Signin = () => {
         setError((prev) => ({ ...prev, [name]: errorMsg }));
     };
 
-    // onChange 
+    // onChange handler
     const handleChange = (e) => {
         const { name, value } = e.target;
         const updatedUser = { ...user, [name]: value }
         setUser(updatedUser);
-
         if (error[name] !== '') {
             const errorMsg = validateField(name, value, updatedUser);
             setError((prev) => ({ ...prev, [name]: errorMsg }));
@@ -50,7 +49,6 @@ const Signin = () => {
         const fields = ['email', 'password'];
         const newErrors = {};
         let isValid = true;
-
         fields.forEach((field) => {
             const errorMsg = validateField(field, user[field]);
             newErrors[field] = errorMsg;
@@ -65,7 +63,6 @@ const Signin = () => {
         emailInputCheck.test(user.email) &&
         user.password.length >= 8;
 
-
     const loginButtonHandler = async (event) => {
         event.preventDefault();
         const checkValidates = validateInput();
@@ -73,25 +70,23 @@ const Signin = () => {
             throw new Error("Enter valid details");
         }
         try {
-            const response = await loginData({
+            const { data } = await loginData({
                 variables: {
                     email: user.email,
                     password: user.password
                 }
             });
-            if (response) {
+            const { user: userData } = data.login;
+            if (userData.role === 'Admin' || userData.role === 'Project Manager' || userData.role === 'Engineer') {
+                await refetch()
+                navigate('/dashboard', { replace: true });
                 toast.success("Successfully logged in.");
-                navigate('/dashboard');
-                setLoginUserData(response.data.login.user);
             }
-            console.log(response);
-
         } catch (error) {
-           console.log(error);
-           toast.error(error.message);
+            toast.error(error.message);
         };
     }
-
+    
     return (
         <>
             <Box className="login-section">
@@ -124,24 +119,24 @@ const Signin = () => {
                                 onBlur={handleBlur}
                                 label="Password"
                                 slotProps={{
-                                        input: {
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, password: !pre.password }))}>
-                                                        {showVisible.password ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            )
-                                        }
-                                    }}
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, password: !pre.password }))}>
+                                                    {showVisible.password ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }
+                                }}
                                 variant="standard"
                                 color="success" />
                             <Stack direction={'row'} sx={{ justifyContent: 'space-between', marginTop: 2, textAlign: 'center' }}>
                                 <Link to='/forget'><Typography sx={{ cursor: 'pointer', color: '#053348' }}>Forgot password?</Typography></Link>
                             </Stack>
-                            <Button     
-                                variant="contained" 
-                                className="login-button" 
+                            <Button
+                                variant="contained"
+                                className="login-button"
                                 onClick={loginButtonHandler}
                                 disabled={!isFormValid}
                             >Sign in</Button>

@@ -15,7 +15,6 @@ export const resolvers = () => {
         tasks: async () => {
             return await AppDataSource.getRepository(Task).find();
         };
-        
     }
     Mutation: {
         signup: async (_, userData) => {
@@ -35,22 +34,24 @@ export const resolvers = () => {
                 phone: userData.phone
             });
             await userRepo.save(user);
-            const token = generateTokens(user.id);
-            console.log("Congratulation! You have successfully signed up.");
-            return { token, user };
         };
-        login: async (_, userData) => {
+        login: async (_, userData, {req, res}) => {
             const userRepo = AppDataSource.getRepository(User);
             const user = await userRepo.find({ where: { email: userData.email } });
             if (!user) {
                 throw "Invalid credentials";
             }
             const token = generateTokens(user.id);
+            res.cookie('token', token,{
+                httpOnly:true,
+                secure:false,
+                sameSite:'lax',
+                maxAge:'24*60*60*100'
+            })
             const validUser = await bcrypt.compare(user.password, userData.password);
             if (!validUser) {
                 throw "Email and password does not exist";
             }
-            console.log("You are now logged in.");
             return { token, user };
         };
         createProject: async (_, projectData) => {

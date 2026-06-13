@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Task } from "./Task.ts";
-import { User } from "./User.ts";
 
 @Entity()
 export class Project {

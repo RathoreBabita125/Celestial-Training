@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { emailInputCheck, phoneInputCheck } from "../../constants/const.js";
 
 const AddUser = ({ open, handleClose, setOpenUser }) => {
+    
     const [addUser] = useMutation(ADDUSER,
         {
             refetchQueries: ['getUsers']
@@ -52,7 +53,6 @@ const AddUser = ({ open, handleClose, setOpenUser }) => {
             if (response) {
                 toast.success("User has been successfully added.");
             }
-            console.log(response);
             setUser({
                 fullName: '',
                 email: '',
@@ -61,7 +61,6 @@ const AddUser = ({ open, handleClose, setOpenUser }) => {
                 role: '',
             });
         } catch (error) {
-            console.log(error);
             toast.error(error.message);
         }
     };
