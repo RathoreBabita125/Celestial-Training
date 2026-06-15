@@ -1,8 +1,6 @@
 import { Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation} from "@apollo/client/react";
-import {  LOGIN } from "../../query/query";
 import './Login.css';
 import { toast } from "react-toastify";
 import { validateField } from "../../common/formFieldValidate";
@@ -11,6 +9,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { useMutation } from "@apollo/client/react";
+import { LOGIN } from "../../query/loginQuery/Login.js";
 
 const Signin = () => {
     const navigate = useNavigate();

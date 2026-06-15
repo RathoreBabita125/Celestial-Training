@@ -1,5 +1,4 @@
-html,
-body {
+html, body {
     overflow-x: hidden;
 }
 .dashboard-navbar {
@@ -41,6 +40,7 @@ body {
     text-transform: none;
     font-size: 18px;
 }
+/* sidebar */
 .sidebar {
     width: 20%;
     height: 100vh;
@@ -48,6 +48,9 @@ body {
     left: 0;
     top: 0;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 25px;
+    font-size: 30px;
+    cursor: pointer !important;
 }
 .sidebar-box {
     width: 80%;
@@ -62,10 +65,11 @@ body {
     text-decoration: none !important;
     color: #053348;
 }
-.sidebar {
-    padding: 25px;
-    font-size: 30px;
-    cursor: pointer !important;
+.sidebar-close-btn {
+    display: none !important;
+}
+.sidebar-desktop {
+    display: block;
 }
 .task-section {
     color: #053348 !important;
@@ -102,7 +106,7 @@ body {
     margin-left: 45%;
     margin-top: 16.5vh;
 }
-.dash-user-show{
+.dash-user-show {
     width: 40% !important;
     align-items: center;
     padding: 25px;
@@ -161,13 +165,12 @@ body {
     color: #053348 !important;
     font-size: 18px !important;
     width: 70% !important;
-}
+}       
 .team-table-row {
     font-size: 18px !important;
     color: #053348 !important;
     border: 1px solid #053348;
-}
-
+}   
 .view-task-section {
     width: 100% !important;
     padding: 2rem !important;
@@ -203,25 +206,131 @@ body {
     font-size: 18px !important;
     color: #053348 !important;
     border: 1px solid rgb(189, 183, 183);
-    /* padding: 6px 8px; */
 }
-.calender-section{
+.calender-section {
     position: absolute;
     left: 30rem;
     width: 70% !important;
     height: 100vh !important;
     color: #053348 !important;
 }
-
-.darkMode{
+.darkMode {
     background-color: #053348 !important;
     color: white !important;
 }
-
-.lightMode{
+.lightMode {
     background-color: white !important;
     color: #053348 !important;
 }
 
+@media screen and (max-width: 768px) {
 
-
+    /* hide desktop sidebar */
+    .sidebar-desktop {
+        display: none;
+    }
+    /* show close button inside drawer */
+    .sidebar-close-btn {
+        display: flex !important;
+    }
+    .sidebar {
+        width: 100%;
+        position: relative;
+        height: 100%;
+        box-shadow: none;
+    }
+    .dashboard-navbar-box {
+        left: 0;
+    }
+    .dashboard-navbar-items {
+        gap: 10px;
+        padding: 6px;
+    }
+    .dash-outlet {
+        margin-left: 0;
+        margin-top: 12vh;
+        width: 100%;
+        padding: 0 12px;
+    }
+    .task-section {
+        margin-left: 0 !important;
+        padding: 12px !important;
+    }
+    .dash-task-creation {
+        margin-left: 0;
+        margin-top: 2rem;
+        padding: 12px;
+    }
+    .dash-teamuser-section {
+        position: relative;
+        left: 0;
+        width: 100% !important;
+        padding: 12px;
+    }
+    .project-section {
+        position: relative;
+        left: 0;
+        width: 100% !important;
+        padding: 12px;
+    }
+    .project-box{
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    .calender-section {
+        position: relative;
+        left: 0;
+        width: 100% !important;
+        height: auto !important;
+        padding: 12px;
+    }
+    .dash-project-section {
+        width: 100%;
+        margin-left: 0;
+    }
+    .dash-project-section .project-btn {
+        font-size: 15px !important;
+        margin-top: 20px;
+    }
+    .project-textfield {
+        width: 100% !important;
+    }
+    .task-status {
+        width: 100% !important;
+        margin-top: 2rem !important;
+    }
+    .dash-task-delete {
+        margin-top: 2rem !important;
+        margin-left: 0 !important;
+    }
+    .dash-edit-task {
+        margin-top: 2rem !important;
+    }
+    .dash-card {
+        width: 100% !important;
+    }
+    .user-table-column {
+        font-size: 14px !important;
+    }
+    .project-table-column,
+    .project-table-row,
+    .team-table-row {
+        font-size: 13px !important;
+    }
+}
+@media screen and (max-width: 480px) {
+    .dashboard-navbar-items {
+        gap: 6px;
+        padding: 4px;
+    }
+    .dash-outlet {
+        padding: 0 8px;
+    }
+    .sidebar-box {
+        padding: 20px;
+    }
+    .sidebar-typo {
+        font-size: 18px !important;
+    }
+}

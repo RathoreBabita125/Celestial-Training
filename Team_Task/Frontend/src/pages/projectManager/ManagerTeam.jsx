@@ -2,7 +2,8 @@ import { Box, Stack, Typography } from "@mui/material"
 import MemberCard from "../../common/MemberCard"
 import LoadingCompo from "../../common/Loader";
 import { useQuery } from "@apollo/client/react";
-import { GETPROJECTDETAILS } from "../../query/query";
+import { GETPROJECTDETAILS } from "../../query/project/GetProjectDetails";
+
 
 const ManagerTeam = () => {
     const { loading: projectDetailsLoading, data: projectDetails } = useQuery(GETPROJECTDETAILS);
@@ -27,24 +28,26 @@ const ManagerTeam = () => {
     return (
         <>
             <Box className="project-section">
-                <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', mb: 5 }}>Team Member Details</Typography>
-                <Stack direction={'row'} spacing={3}>
-                    {
-                        projectDetails?.getProjectDetails?.map((projectData) => {
-                            return projectData?.tasks?.map((taskData) => {
-                                return <MemberCard
-                                    key={taskData.id}
-                                    engineer={taskData.assignedTo?.fullName}
-                                    email={taskData.assignedTo?.email}
-                                    role={taskData.assignedTo?.role}
-                                    project={projectData?.title}
-                                    task={taskData?.title}
-                                    totalTask={projectData.tasks.length}
-                                />
+                <Box className="project-box">
+                    <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', mb: 5 }}>Team Member Details</Typography>
+                    <Stack direction={'row'} spacing={1} sx={{display:"flex", flexWrap:'wrap', gap:5}}>
+                        {
+                            projectDetails?.getProjectDetails?.map((projectData) => {
+                                return projectData?.tasks?.map((taskData) => {
+                                    return <MemberCard
+                                        key={taskData.id}
+                                        engineer={taskData.assignedTo?.fullName}
+                                        email={taskData.assignedTo?.email}
+                                        role={taskData.assignedTo?.role}
+                                        project={projectData?.title}
+                                        task={taskData?.title}
+                                        totalTask={projectData.tasks.length}
+                                    />
+                                })
                             })
-                        })
-                    }
-                </Stack>
+                        }
+                    </Stack>
+                </Box>
             </Box>
         </>
     )

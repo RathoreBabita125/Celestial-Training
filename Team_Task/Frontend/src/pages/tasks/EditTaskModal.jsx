@@ -4,10 +4,12 @@ import MyButton from "../../common/Button";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { GETPROJECTS, GETUSERS, UPDATETASK } from "../../query/query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import LoadingCompo from "../../common/Loader";
 import { toast } from "react-toastify";
+import { GETUSERS } from "../../query/user/GetUser";
+import { UPDATETASK } from "../../query/task/UpdateTask";
+import { GETPROJECTS } from "../../query/project/GetProject";
 
 const EditTaskModal = ({ open, handleClose, selectedTask }) => {
 

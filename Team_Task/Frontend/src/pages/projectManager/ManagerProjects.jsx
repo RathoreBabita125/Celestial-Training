@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
-import { GETPROJECTDETAILS } from "../../query/query";
+import { GETPROJECTDETAILS } from "../../query/project/GetProjectDetails";
 import { useQuery } from "@apollo/client/react";
 import LoadingCompo from "../../common/Loader";
 import FilterListIcon from '@mui/icons-material/FilterList';

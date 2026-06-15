@@ -1,6 +1,5 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, Box, FormLabel, Typography, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { GETUSERS, UPDATEPROJECT } from "../../query/query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import MyButton from "../../common/Button";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -8,6 +7,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import LoadingCompo from "../../common/Loader";
 import { toast } from "react-toastify";
+import { GETUSERS } from "../../query/user/GetUser";
+import { UPDATEPROJECT } from "../../query/project/EditProject";
 
 const EditProjectModal = ({ open, handleClose, selectedProject }) => {
     const { loading, data } = useQuery(GETUSERS);
@@ -32,6 +33,25 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
         status: '',
         priority: '',
     });
+
+    //validation
+    const validateProjectInputs = () => {
+        const newError = {};
+        if (!editProject.title || editProject.title.trim() === "") {
+            newError.title = "Project name field is required.";
+        }
+        if (!editProject.description || editProject.description.trim() === "") {
+            newError.description = "Description field is required.";
+        }
+        if (!editProject.status || editProject.status.trim() === "") {
+            newError.status = "Status field is required";
+        }
+        if (!editProject.priority) {
+            newError.status = "Priority field is required";
+        }
+        setError(newError);
+        return Object.keys(newError).length === 0;
+    }
 
     useEffect(() => {
         setEditProject(
@@ -62,6 +82,10 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
     //handle edit button
     const handleEditProjectBTN = async () => {
         try {
+            const checkValidate = validateProjectInputs();
+            if (!checkValidate) {
+                throw new Error("Please fill all required field.");
+            }
             const response = await updateProject({
                 variables: {
                     title: editProject.title,
@@ -114,10 +138,10 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{ opacity: "60%" }}>
-            <Box sx={{ padding: 2 }}>
+            <Box sx={{ padding: 0.1 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Edit Existing Project</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={1.5}>
+                    <Stack spacing={0.5}>
                         <Box >
                             <FormLabel>Project Name *</FormLabel>
                             <TextField
@@ -139,7 +163,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                                 required
                                 name="description"
                                 multiline
-                                rows={4}
+                                rows={3}
                                 margin="normal"
                                 value={editProject.description}
                                 onChange={handleProjectInputs}
@@ -171,7 +195,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                         </FormControl>
 
                         <FormControl fullWidth>
-                            <FormLabel sx={{ mb: 1, mt: 2 }}>Engineers *</FormLabel>
+                            <FormLabel sx={{ mb: 1, mt: 1}}>Engineers *</FormLabel>
                             <Select
                                 multiple
                                 name="engineers"
@@ -202,7 +226,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                                 }
                             </Select>
                         </FormControl>
-                        <Stack direction={'row'} spacing={3} sx={{ marginTop: 3 }}>
+                        <Stack direction={'row'} spacing={2} sx={{ marginTop: 3 }}>
                             <FormControl>
                                 <FormLabel sx={{ mb: 1 }}>Status *</FormLabel>
                                 <Select

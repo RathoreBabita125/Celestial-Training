@@ -2,7 +2,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, M
 import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import MyButton from "../../common/Button";
-import { ADDUSER } from "../../query/query";
+import { ADDUSER } from "../../query/user/AddUser";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from "react-toastify";

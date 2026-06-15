@@ -1,63 +1,58 @@
 import { Box, Button, Stack, Typography, TextField, FormControl, InputAdornment, Select, MenuItem, FormHelperText, IconButton } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useMutation } from '@apollo/client/react';
 import './Login.css';
-import { SIGNUP } from "../../query/query";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from 'react-toastify';
 import { validateField } from "../../common/formFieldValidate";
 import { emailInputCheck, phoneInputCheck } from "../../constants/const.js";
+import { SIGNUP } from "../../query/loginQuery/Signup.js";
 
 const Signup = () => {
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const [user, setUser] = useState({
-        fullName: '',
-        email: '',
-        role: '',
-        password: '',
-        confirmPassword: '',
+        fullName: '', 
+        email: '', 
+        role: '', 
+        password: '', 
+        confirmPassword: '', 
         phone: ''
     });
     const [error, setError] = useState({
-        fullName: '',
-        email: '',
-        role: '',
-        password: '',
-        confirmPassword: '',
+        fullName: '', 
+        email: '', 
+        role: '', 
+        password: '', 
+        confirmPassword: '', 
         phone: ''
     });
     const [showVisible, setShowVisible] = useState(false);
     const [signupData] = useMutation(SIGNUP);
 
-    // field validation
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        const latestUser = { ...user, [name]: value }
+        const latestUser = { ...user, [name]: value };
         const errorMsg = validateField(name, value, latestUser);
         setError((prev) => ({ ...prev, [name]: errorMsg }));
     };
 
-    // onChange 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const updatedUser = { ...user, [name]: value }
+        const updatedUser = { ...user, [name]: value };
         setUser(updatedUser);
-
         if (error[name] !== '') {
             const errorMsg = validateField(name, value, updatedUser);
             setError((prev) => ({ ...prev, [name]: errorMsg }));
         }
     };
 
-    //validate input
     const validateInput = () => {
         const fields = ['fullName', 'email', 'password', 'confirmPassword', 'role', 'phone'];
         const newErrors = {};
         let isValid = true;
-
         fields.forEach((field) => {
             const errorMsg = validateField(field, user[field], user);
             newErrors[field] = errorMsg;
@@ -67,7 +62,7 @@ const Signup = () => {
         return isValid;
     };
 
-    const checkFormValid=user?.fullName?.trim() !== "" &&
+    const checkFormValid = user?.fullName?.trim() !== "" &&
         user?.email?.trim() !== "" &&
         emailInputCheck.test(user?.email) &&
         user?.password.length >= 8 &&
@@ -79,36 +74,35 @@ const Signup = () => {
     const handleSignupButton = async (event) => {
         event.preventDefault();
         const checkValidate = validateInput();
-        if (!checkValidate) {
-            throw "Invalid Credentials";
-        }
+        if (!checkValidate) throw "Invalid Credentials";
         try {
             const response = await signupData({
                 variables: {
-                    fullName: user.fullName,
-                    email: user.email,
+                    fullName: user.fullName, 
+                    email: user.email, 
                     password: user.password,
-                    confirmPassword: user.confirmPassword,
-                    role: user.role,
+                    confirmPassword: user.confirmPassword, 
+                    role: user.role, 
                     phone: user.phone
                 }
-            });      
+            });
             if (response) {
-                toast.success("You have successfully signed up.")
-                setUser({
-                    fullName: '',
-                    email: '',
-                    password: '',
-                    confirmPassword: '',
-                    phone: '',
-                    role: '',
+                toast.success("You have successfully signed up.");
+                setUser({ 
+                    fullName: '', 
+                    email: '', 
+                    password: '', 
+                    confirmPassword: '', 
+                    phone: '', 
+                    role: '' 
                 });
-               navigate('/signin');
+                navigate('/signin');
             }
         } catch (error) {
             toast.error(error.message);
         }
-    }
+    };
+
     return (
         <>
             <Box className='register-section'>
@@ -122,103 +116,102 @@ const Signup = () => {
                         </Box>
                     </Box>
                     <Box className='register-right-section'>
-                        <Stack direction={"row"} spacing={2} className="register-right-top-button">
+                        <Stack
+                            direction="row"
+                            className="register-right-top-button"
+                        >
                             <Link to='/signin'><Button sx={{ color: '#053348' }}>Sign in</Button></Link>
                             <Link to='/signup'><Button variant="contained" sx={{ backgroundColor: '#053348' }}>Sign up</Button></Link>
                         </Stack>
-                        <FormControl sx={{ marginTop: 2, padding: 7 }}>
-                            <Typography variant="h4" color="intial" sx={{ fontWeight: 'bold' }}>Register</Typography>
+                        <FormControl className="register-form-control">
+                            <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold' }}>Register</Typography>
                             <Box className='register-form'>
                                 <TextField
-                                    id='fullName'
+                                    id='fullName' 
                                     error={error.fullName}
                                     helperText={error.fullName ? error.fullName : ''}
-                                    type="text"
-                                    onBlur={handleBlur}
+                                    type="text" 
+                                    onBlur={handleBlur} 
                                     name="fullName"
-                                    value={user.fullName}
+                                    value={user.fullName} 
                                     onChange={handleChange}
-                                    label="Full Name"
-                                    variant="standard"
-                                    required
+                                    label="Full Name" 
+                                    ariant="standard" 
+                                    required 
                                     color="success" />
                                 <TextField
-                                    id="email"
-                                    error={error.email}
+                                    id="email" e
+                                    rror={error.email}
                                     helperText={error.email ? error.email : ''}
-                                    type="email"
-                                    onBlur={handleBlur}
+                                    type="email" 
+                                    onBlur={handleBlur} 
                                     name="email"
-                                    value={user.email}
-                                    onChange={handleChange}
-                                    label="Email"
-                                    variant="standard"
-                                    required
+                                    value={user.email} o
+                                    nChange={handleChange}
+                                    label="Email" 
+                                    variant="standard" r
+                                    equired 
                                     color="success" />
                                 <TextField
-                                    id="password"
+                                    id="password" 
                                     error={error.password}
                                     helperText={error.password ? error.password : ''}
                                     type={showVisible.password ? 'text' : 'password'}
-                                    name="password"
+                                    name="password" 
                                     onBlur={handleBlur}
-                                    value={user.password}
+                                    value={user.password} 
                                     onChange={handleChange}
-                                    label="Password"
+                                    label="Password" 
                                     required
                                     slotProps={{
                                         input: {
                                             endAdornment: (
                                                 <InputAdornment position="end">
-                                                    <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, password: !pre.password }))}>
+                                                    <IconButton onClick={() => setShowVisible((pre) => ({ ...pre, password: !pre.password }))}>
                                                         {showVisible.password ? <VisibilityIcon /> : <VisibilityOffIcon />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             )
                                         }
                                     }}
-                                    variant="standard"
-                                    color="success" />
+                                    variant="standard" color="success" />
                                 <TextField
-                                    id="confirm-password"
+                                    id="confirm-password" 
                                     error={error.confirmPassword}
                                     helperText={error.confirmPassword ? error.confirmPassword : ''}
                                     type={showVisible.confirmPassword ? 'text' : 'password'}
-                                    onBlur={handleBlur}
+                                    onBlur={handleBlur} 
                                     name="confirmPassword"
-                                    value={user.confirmPassword}
+                                    value={user.confirmPassword} 
                                     onChange={handleChange}
-                                    label="Confirm Password"
+                                    label="Confirm Password" 
                                     required
                                     slotProps={{
                                         input: {
                                             endAdornment: (
                                                 <InputAdornment position="end">
-                                                    <IconButton aria-label="" onClick={() => setShowVisible((pre) => ({ ...pre, confirmPassword: !pre.confirmPassword }))}>
+                                                    <IconButton onClick={() => setShowVisible((pre) => ({ ...pre, confirmPassword: !pre.confirmPassword }))}>
                                                         {showVisible.confirmPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             )
                                         }
                                     }}
-                                    variant="standard"
-                                    color="success"
-                                />
+                                    variant="standard" color="success" />
                                 <FormControl error={!!error.role} sx={{ mt: 2 }} fullWidth>
                                     <Select
-                                        sx={{ mt: 1 }}
-                                        variant="standard"
+                                        sx={{ mt: 1 }} 
+                                        variant="standard" 
                                         name="role"
-                                        value={user.role}
+                                        value={user.role} 
                                         onChange={handleChange}
-                                        required
-                                        onBlur={handleBlur}
+                                        required 
+                                        onBlur={handleBlur} 
                                         displayEmpty
-                                        error={error.role}
-                                        label="Role *"
-                                        color="success"
-                                    >
-                                        <MenuItem value="" disabled >Role *</MenuItem>
+                                        error={error.role} l
+                                        abel="Role *" 
+                                        color="success">
+                                        <MenuItem value="" disabled>Role *</MenuItem>
                                         <MenuItem value="Admin">Admin</MenuItem>
                                         <MenuItem value="Project Manager">Project Manager</MenuItem>
                                         <MenuItem value="Engineer">Engineer</MenuItem>
@@ -226,24 +219,22 @@ const Signup = () => {
                                     <FormHelperText>{error.role ? error.role : ''}</FormHelperText>
                                 </FormControl>
                                 <TextField
-                                    id="phone"
+                                    id="phone" 
                                     error={error.phone}
                                     helperText={error.phone ? error.phone : ''}
-                                    type="number"
+                                    type="number" 
                                     name="phone"
-                                    value={user.phone}
+                                    value={user.phone} 
                                     onChange={handleChange}
-                                    onBlur={handleBlur}
+                                    onBlur={handleBlur} 
                                     label="Phone"
-                                    variant="standard"
-                                    color="success"
-                                />
+                                    variant="standard" 
+                                    color="success" />
                                 <Button
                                     className="register-signup-button"
                                     variant="contained"
                                     onClick={handleSignupButton}
-                                    disabled={!checkFormValid}
-                                >
+                                    disabled={!checkFormValid}>
                                     Sign Up
                                 </Button>
                                 <Stack direction={'row'} spacing={1} className="register-signup">
@@ -252,7 +243,9 @@ const Signup = () => {
                                     <Box className='register-box-line'></Box>
                                 </Stack>
                                 <Stack direction={'row'} spacing={1} sx={{ margin: '0 auto', marginTop: 1 }}>
-                                    <Button className="register-with-google" variant="outlined" color="success"><GoogleIcon sx={{ color: '#053348' }} /></Button>
+                                    <Button className="register-with-google" variant="outlined" color="success">
+                                        <GoogleIcon sx={{ color: '#053348' }} />
+                                    </Button>
                                 </Stack>
                             </Box>
                         </FormControl>

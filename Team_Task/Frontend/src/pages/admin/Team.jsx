@@ -9,8 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import { useQuery } from '@apollo/client/react';
-import { GETUSERS } from '../../query/query';
 import LoadingCompo from '../../common/Loader';
+import { GETUSERS } from '../../query/user/GetUser';
 
 const Team = () => {
 

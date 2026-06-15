@@ -3,11 +3,11 @@ import ArrowBack from '@mui/icons-material/ArrowBack';
 import { Link } from "react-router";
 import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
-import { FORGET } from "../../query/query";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from "react-toastify";
 import { validateField } from "../../common/formFieldValidate";
+import { FORGET } from "../../query/loginQuery/Forget";
 
 const Forget = () => {
     const [user, setUser] = useState({
@@ -83,7 +83,7 @@ const Forget = () => {
                 })
             }
         } catch (error) {
-            toast.error("Reset Password failed. Please try again")
+            toast.error(error.message, "Please try again")
         }
     }
     return (

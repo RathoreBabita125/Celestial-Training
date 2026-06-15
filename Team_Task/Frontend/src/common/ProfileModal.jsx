@@ -8,9 +8,11 @@ import { Box, Typography } from '@mui/material'
 import { useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
 
-const ProfileModal=(open, onclose, setOpenProfile)=>{
+const ProfileModal=({open, onclose, setOpenProfile})=>{
 
     const {userAuth} = useContext(AuthContext);
+
+    console.log(userAuth)
 
     const handleCloseBTN=()=>{
         setOpenProfile(false)
@@ -24,14 +26,16 @@ const ProfileModal=(open, onclose, setOpenProfile)=>{
                 fullWidth 
                 maxWidth="sm"
             >
-                <Box sx={{padding:1}}>
+                <Box sx={{padding:2}}>
                     <DialogTitle>
-                        <Typography variant="h5" color="initial">Personal Information</Typography>
+                        <Typography variant="h5" color="initial" sx={{color:'#053348'}}>Personal Information</Typography>
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            <Typography variant="body1" color="initial">Name: {userAuth.username}</Typography>
-                            <Typography variant="body1" color="initial">Email: {userAuth.email}</Typography>
+                            <Typography variant="body1" color="initial"><strong>Name: </strong>{userAuth.fullName}</Typography>
+                            <Typography variant="body1" color="initial"><strong>Email: </strong> {userAuth.email}</Typography>
+                            <Typography variant="body1" color="initial"><strong>Role: </strong> {userAuth.role}</Typography>
+                            <Typography variant="body1" color="initial"><strong>Contact: </strong> {userAuth.phone}</Typography>
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

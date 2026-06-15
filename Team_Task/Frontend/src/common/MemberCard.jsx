@@ -3,7 +3,7 @@ import { Avatar, Box, Card, CardContent, Stack, Typography } from "@mui/material
 const MemberCard = ({ engineer, email, role, project, task, totalTask }) => {
 
     return (
-        <Card sx={{width:600}}>
+        <Card sx={{width:300}}>
             <CardContent>
                 <Stack direction={'column'} spacing={2}>
                     <Box sx={{display:'flex', justifyContent:'center', alignItems:'center'}}>

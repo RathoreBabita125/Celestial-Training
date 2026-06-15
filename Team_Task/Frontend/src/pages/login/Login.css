@@ -74,7 +74,6 @@
     width: 120px;
     padding: 2px;
 }
-
 @media screen and (max-width:1280px){
     .register-parent, .login-box{
         width: 96%;
@@ -97,7 +96,6 @@
         width: 50px;
     }    
 }
-
 @media screen and (max-width:768px){
     .register-parent, .login-box{
         flex-direction: column;
@@ -125,7 +123,6 @@
         width: 50px;
     }
 }
-
 @media screen  and (max-width:480){
     .register-right-section{
         padding: 20px 15px;
@@ -138,7 +135,6 @@
         max-width: 100%;
     }
 }
-
 /* Login */
 .login-box{
     display: flex;
@@ -190,7 +186,6 @@
     gap: 7px;
     color: #053348 !important;
 }
-
 @media screen and (max-width:1280px){
     .login-box{
         padding: 10px;
@@ -220,7 +215,6 @@
         width: 80px;
     }
 }
-
 /* forget */
 .forget-box{
     width: 50%;
@@ -267,7 +261,6 @@
     gap: 2px;
     color: #053348 !important;
 }
-
 @media screen and (max-width:768px){
     .forget-box{
         padding: 15px;
@@ -313,30 +306,5 @@
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
 
 

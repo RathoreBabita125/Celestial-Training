@@ -1,8 +1,8 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Typography} from "@mui/material";
 import MyButton from "../../common/Button";
-import { DELETETASK } from "../../query/query";
 import { toast } from "react-toastify";
 import { useMutation } from "@apollo/client/react";
+import { DELETETASK } from "../../query/task/DeleteTask";
 
 const DeleteTaskModal = ({open, handleClose, selectDeleteID, setOpenDelete}) => {
 

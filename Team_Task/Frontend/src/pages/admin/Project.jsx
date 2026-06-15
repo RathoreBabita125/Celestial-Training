@@ -1,8 +1,7 @@
-import { Box, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Snackbar, Alert, TablePagination, Button } from '@mui/material';
+import { Box, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import '../dashboard/Dashboard.css'
 import { useQuery } from '@apollo/client/react';
-import { GETPROJECTS } from '../../query/query';
 import DeleteForeverIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import CreateProjectModal from '../project/CreateProjectModal';
@@ -15,9 +14,9 @@ import EditProjectModal from '../project/EditProjectModal';
 import LoadingCompo from '../../common/Loader';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterProjectModal from '../project/FilterProjectModal';
+import { GETPROJECTS } from '../../query/project/GetProject';
 
 const Project = () => {
-
     const [openCreate, setOpenCreate] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openView, setOpenView] = useState(false);
@@ -112,7 +111,6 @@ const Project = () => {
                                 setPage={setPage}
                                 setOpenFilter={setOpenFilter}
                             />
-
                         </Stack>
                     </Box>
                 }
@@ -130,7 +128,7 @@ const Project = () => {
                                     <TableCell className='user-table-column' align='center'>Priority</TableCell>
                                     <TableCell className='user-table-column' align='center'>Start Date</TableCell>
                                     <TableCell className='user-table-column' align='center'>End Date</TableCell>
-                                    <TableCell className='user-table-column' align='center'>Action</TableCell>
+                                    <TableCell className='user-table-column' align='center'>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody className='project-table-body'>

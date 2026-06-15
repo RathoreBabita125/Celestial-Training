@@ -11,7 +11,6 @@ import Project from "./pages/admin/Project";
 import Team from "./pages/admin/Team";
 import Calender from "./pages/calender/Calender";
 import UserManagement from "./pages/admin/UserManagement";
-import ManagerHome from "./pages/projectManager/ManagerHome";
 import ManagerProjects from "./pages/projectManager/ManagerProjects";
 import ManagerTasks from "./pages/projectManager/ManagerTasks";
 import UnAuthorizedPage from "./components/UnAuthorizedPage";
@@ -19,6 +18,7 @@ import ProtectedRoute from "./pages/protectedRoutes/ProtectedRoutes";
 import RoleBasedHome from "./pages/dashboard/RoleBasedHome";
 import ManagerTeam from "./pages/projectManager/ManagerTeam";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import EngineerTask from './pages/engineer/EngineerTask';
 
 const router = createBrowserRouter([
   {
@@ -77,6 +77,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={['Project Manager']}>
                 <ManagerTeam />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'engineer-tasks',
+            element: (
+              <ProtectedRoute allowedRoles={['Engineer']}>
+                <EngineerTask />
               </ProtectedRoute>
             ),
           },

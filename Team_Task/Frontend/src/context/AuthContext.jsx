@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
-import { GETME } from "../query/query";
 import { useQuery } from "@apollo/client/react";
+import { GETME } from "../query/loginQuery/Me.js";
 
 export const AuthContext = createContext();
 

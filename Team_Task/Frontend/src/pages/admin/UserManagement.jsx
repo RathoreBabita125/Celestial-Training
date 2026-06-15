@@ -9,7 +9,6 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import { useQuery } from '@apollo/client/react';
-import { GETUSERS } from '../../query/query';
 import { Button, TablePagination } from '@mui/material';
 import { useContext, useState } from 'react';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
@@ -22,6 +21,7 @@ import UpdateUser from '../members/UpdateUser';
 import DeleteUser from '../members/DeleteUser';
 import Filter from '../filter/Filter';
 import { FilterContext } from '../../context/FilterContext';
+import { GETUSERS } from '../../query/user/GetUser';
 
 const UserManagement = () => {
 

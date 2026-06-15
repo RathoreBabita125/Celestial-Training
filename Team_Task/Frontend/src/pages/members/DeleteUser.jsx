@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import { Dialog, DialogContent, DialogActions, Box } from "@mui/material";
 import { useMutation } from "@apollo/client/react";
 import MyButton from "../../common/Button";
-import { DELETEUSER } from "../../query/query";
+import { DELETEUSER } from "../../query/user/DeleteUser";
 import { toast } from "react-toastify";
 
 const DeleteUser = ({ open, handleClose, setOpenDelete, deleteUser }) => {

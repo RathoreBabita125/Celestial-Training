@@ -2,18 +2,25 @@ import { Box, Stack } from "@mui/material";
 import DashNavbar from "./Navbar";
 import DashSidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
 const Dashboard = () => {
+    const [mobileOpen, setMobileOpen] = useState(false);
     return (
         <>
             <Stack direction={'row'}>
-                <DashSidebar/>
+                {/* <DashSidebar/> */}
+                <DashSidebar
+                    mobileOpen={mobileOpen}
+                    onClose={() => setMobileOpen(false)}
+                />
                 <Box >
                     <Box className="dashboard-navbar-box">
-                        <DashNavbar />
+                        {/* <DashNavbar /> */}
+                        <DashNavbar onMenuClick={() => setMobileOpen(true)} />
                     </Box>
                     <Box className="dash-outlet" >
-                        <Outlet/>  
+                        <Outlet />
                     </Box>
                 </Box>
             </Stack>

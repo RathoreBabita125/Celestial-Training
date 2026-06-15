@@ -1,10 +1,11 @@
 import { useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import { GETPROJECTS, GETUSERS } from '../../query/query';
+import { AuthContext } from '../../context/AuthContext';;
 import { useQuery } from '@apollo/client/react';
 import LoadingCompo from '../../common/Loader';
 import { Box, Stack, Typography } from '@mui/material';
 import CardComp from '../../common/Card';
+import { GETUSERS } from '../../query/user/GetUser';
+import { GETPROJECTS } from '../../query/project/GetProject';
 
 const ManagerHome = () => {
 

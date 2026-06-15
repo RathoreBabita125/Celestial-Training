@@ -4,7 +4,6 @@ import { useContext, useState } from 'react';
 import MyButton from '../../common/Button';
 import CreateTaskModal from '../tasks/CreateTaskModal';
 import '../dashboard/Dashboard.css'
-import { GETTASKS } from '../../query/query';
 import { useQuery } from '@apollo/client/react';
 import LoadingCompo from '../../common/Loader';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
@@ -16,6 +15,7 @@ import EditTaskModal from '../tasks/EditTaskModal';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import Filter from '../filter/Filter';
 import { FilterContext } from '../../context/FilterContext';
+import { GETTASKS } from '../../query/task/GetTask';
 
 const ManagerTasks = () => {
 

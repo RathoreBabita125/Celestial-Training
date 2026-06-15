@@ -3,6 +3,7 @@ import AdminHome from "../admin/AdminHome";
 import ManagerHome from "../projectManager/ManagerHome";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import EngineerHome from "../engineer/EngineerHome";
 
 const RoleBasedHome=()=> {
 const {userAuth} = useContext(AuthContext);
@@ -14,8 +15,8 @@ const {userAuth} = useContext(AuthContext);
     case 'Project Manager':
       return <ManagerHome />;
 
-    // case 'Engineer':
-    //   return <EngineerHome />;
+    case 'Engineer':
+      return <EngineerHome/>;
 
     default:
       return <Navigate to="/signin" />;

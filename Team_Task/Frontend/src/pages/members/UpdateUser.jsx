@@ -2,11 +2,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, M
 import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import MyButton from "../../common/Button";
-import { UPDATEUSER } from "../../query/query";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from "react-toastify";
 import { emailInputCheck, phoneInputCheck } from "../../constants/const";
+import { UPDATEUSER } from "../../query/user/EditUser";
 
 const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
     const [updateUser]=useMutation(UPDATEUSER,{

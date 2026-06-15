@@ -1,8 +1,8 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box} from "@mui/material";
 import MyButton from "../../common/Button";
-import { DELETEPROJECT } from "../../query/query";
 import { toast } from "react-toastify";
 import { useMutation } from "@apollo/client/react";
+import { DELETEPROJECT } from "../../query/project/DeleteProject";
 
 const DeleteProjectModal = ({open, handleClose, selectDeleteID, setOpenDelete}) => {
     const [deleteProject] = useMutation(DELETEPROJECT, {
