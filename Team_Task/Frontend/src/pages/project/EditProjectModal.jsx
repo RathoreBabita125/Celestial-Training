@@ -18,8 +18,10 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
         }
     );
     const [editProject, setEditProject] = useState({
+        id: '',
         title: '',
         projectManager: '',
+        projectManagerId: '',
         engineers: '',
         description: '',
         status: '',
@@ -56,8 +58,10 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
     useEffect(() => {
         setEditProject(
             {
+                id: selectedProject.id,
                 title: selectedProject.title,
                 projectManager: selectedProject.projectManager,
+                projectManagerId: selectedProject.projectManagerId,
                 engineers: selectedProject.engineers,
                 description: selectedProject.description,
                 status: selectedProject.status,
@@ -88,8 +92,10 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
             }
             const response = await updateProject({
                 variables: {
+                    id: editProject.id,
                     title: editProject.title,
                     projectManager: editProject.projectManager,
+                    projectManagerId: editProject.projectManagerId,
                     engineers: editProject.engineers,
                     description: editProject.description,
                     status: editProject.status,
@@ -99,6 +105,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                 }
             });
             if (response) {
+                toast.success("Project has been updated successfully.")
                 setEditProject({
                     title: '',
                     projectManager: '',
@@ -132,12 +139,22 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
         editProject?.status !== "" &&
         editProject?.priority !== "" &&
         editProject.engineers &&
-        editProject.projectManager !== "" &&
+        editProject.projectManager &&
         editProject.startDate &&
         editProject.endDate
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{ opacity: "60%" }}>
+        <Dialog
+            open={open}
+            fullWidth
+            maxWidth="sm"
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose()
+            }}
+        >
             <Box sx={{ padding: 0.1 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Edit Existing Project</DialogTitle>
                 <DialogContent>
@@ -176,10 +193,16 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                             <Select
                                 name="projectManager"
                                 value={editProject.projectManager}
-                                onChange={handleProjectInputs}
-                                required
-                                fontWeight
-                                displayEmpty
+                                onChange={(e) => {
+                                    const selectedUser = projectManagerUser.find(
+                                        (user) => user.fullName === e.target.value
+                                    );
+                                    setEditProject((prev) => ({
+                                        ...prev,
+                                        projectManager: e.target.value,
+                                        projectManagerId: selectedUser?.id  // ✅ id bhi save karo
+                                    }));
+                                }}
                             >
                                 <MenuItem value="" disabled>Select Propject Manager</MenuItem>
                                 {
@@ -195,7 +218,7 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                         </FormControl>
 
                         <FormControl fullWidth>
-                            <FormLabel sx={{ mb: 1, mt: 1}}>Engineers *</FormLabel>
+                            <FormLabel sx={{ mb: 1, mt: 1 }}>Engineers *</FormLabel>
                             <Select
                                 multiple
                                 name="engineers"
@@ -283,7 +306,6 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                                                 startDate: newValue,
                                             })
                                         }
-                                        onChange={handleProjectInputs}
                                         slotProps={
                                             {
                                                 textField: {
@@ -325,7 +347,11 @@ const EditProjectModal = ({ open, handleClose, selectedProject }) => {
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
-                    <Button onClick={handleEditProjectBTN} disabled={isValidProject} sx={{ backgroundColor: '#053348', color: 'white' }}>Edit</Button>
+                    <Button
+                        onClick={handleEditProjectBTN}
+                        disabled={!isValidProject}
+                        sx={{ backgroundColor: isValidProject ? '#053348' : '#E0E0E0', color: 'white' }}
+                    >Edit</Button>
                 </DialogActions>
             </Box>
         </Dialog>

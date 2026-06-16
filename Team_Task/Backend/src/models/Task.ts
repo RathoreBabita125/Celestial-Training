@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Project } from "./Project.ts";
 import { User } from "./User.ts";
 import { Field } from "type-graphql";
@@ -25,6 +25,9 @@ export class Task{
 
     @Column({type:'date'})
     estimateDate!:Date
+
+    @UpdateDateColumn()
+    updatedAt!:Date
 
     @Field(() => User)
     @ManyToOne(()=>User, (user)=>user.tasks, {eager:true})

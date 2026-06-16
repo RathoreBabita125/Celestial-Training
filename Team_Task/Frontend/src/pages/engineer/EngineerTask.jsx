@@ -9,50 +9,67 @@ import { FilterContext } from "../../context/FilterContext";
 import ViewTask from "./ViewTask";
 import { GETTASKS } from "../../query/task/GetTask";
 import Filter from "../filter/Filter";
+import UpdateTaskStatusModal from "./EditTaskStatusModal";
 
 const EngineerTask = () => {
-    const[openView, setOpenView]=useState(false);
-    const[selectMyTask, setSelectMyTask]=useState(null);
-    const {userAuth} = useContext(AuthContext);
-    const { openFilter, setOpenFilter, handleCloseFilter, page, setPage, rowsPerPage, handleChangePage, handleChangeRowsPerPage } = useContext(FilterContext); 
+    const [openView, setOpenView] = useState(false);
+    const [selectMyTask, setSelectMyTask] = useState(null);
+    const { userAuth } = useContext(AuthContext);
+    const { openFilter, setOpenFilter, handleCloseFilter, page, setPage, rowsPerPage, handleChangePage, handleChangeRowsPerPage } = useContext(FilterContext);
     const [filter, setFilter] = useState({
-        title:'',
-        status:'',
-        priority:'',
+        title: '',
+        status: '',
+        priority: '',
     })
-    const { loading: taskLoading, data: taskData } = useQuery(GETTASKS); 
+    const [openStatusModal, setOpenStatusModal] = useState(false);
+    const { loading: taskLoading, data: taskData } = useQuery(GETTASKS);
     const COLUMN_OPTIONS = [
         { label: "Task Name", value: "title" },
         { label: "Status", value: "status" },
         { label: "Priority", value: "priority" },
     ];
-    const filterField=["title","status","priority"];
-    
+    const filterField = ["title", "status", "priority"];
+
     if (taskLoading) return <LoadingCompo />
 
-    console.log(taskData);
+    const myAllTask = taskData?.tasks
+        ?.filter((currTask) => currTask.assignedTo.id === userAuth.id)
+        ?.filter((currTask) => {
+            return (
+                currTask.title?.toLowerCase().includes(filter.title.toLowerCase()) &&
+                currTask.status?.toLowerCase().includes(filter.status.toLowerCase()) &&
+                currTask.priority?.toLowerCase().includes(filter.priority.toLowerCase())
+            );
+        })
+        ?.slice()
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-    const myAllTask=taskData?.tasks?.filter((currTask)=>{
-        return currTask.assignedTo.id===userAuth.id;
-    })
-
-    const handleViewClose=()=>{
+    const handleViewClose = () => {
         setOpenView(false);
     }
-
     return (
-        <Box sx={{width:"65vw"}}>
+        <Box sx={{ width: "65vw" }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
                 <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', color: '#053348' }}>Tasks Details</Typography>
-                <Stack direction={'row'} spacing={2}>        
-                    {/* <Stack direction={'row'} spacing={3}>
+                <Stack direction={'row'} spacing={2}>
+                    <Stack direction={'row'} spacing={3}>
                         <Button sx={{ gap: 2, backgroundColor: '#053348', color: 'white' }}
-                            onClick={()=>setOpenFilter(true)}
+                            onClick={() => setOpenStatusModal(true)}
+                        > Edit Status
+                        </Button>
+                        <UpdateTaskStatusModal
+                            open={openStatusModal}
+                            handleClose={() => setOpenStatusModal(false)}
+                            taskList={myAllTask}
+                        />
+                        <Button
+                            sx={{ gap: 2, backgroundColor: '#053348', color: 'white' }}
+                            onClick={() => setOpenFilter(true)}
                         >
                             <FilterListIcon />
                             Filter
-                        </Button>  
-                         <Filter
+                        </Button>
+                        <Filter
                             open={openFilter}
                             onClose={handleCloseFilter}
                             setOpenFilter={setOpenFilter}
@@ -61,8 +78,8 @@ const EngineerTask = () => {
                             filter={filter}
                             columnOptions={COLUMN_OPTIONS}
                             filterField={filterField}
-                    />       
-                    </Stack> */}
+                        />
+                    </Stack>
                 </Stack>
             </Box>
             <Table className='project-table' sx={{ marginTop: 5 }}>
@@ -91,11 +108,11 @@ const EngineerTask = () => {
                                 <TableCell className='team-table-row' align='center'>{myTask.dueDate} </TableCell>
                                 <TableCell className='team-table-row' align='center'>
                                     <RemoveRedEyeIcon onClick={
-                                        ()=>{
+                                        () => {
                                             setOpenView(true);
                                             setSelectMyTask(myTask)
                                         }
-                                    }/>
+                                    } />
                                     <ViewTask
                                         open={openView}
                                         handleClose={handleViewClose}
@@ -115,6 +132,7 @@ const EngineerTask = () => {
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5, 10, 15, 20]}
                 sx={{ color: '#053348', fontWeight: 'bold' }}
             />
         </Box>

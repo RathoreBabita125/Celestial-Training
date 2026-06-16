@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box} from "@mui/material";
 import MyButton from "../../common/Button";
 import { toast } from "react-toastify";
 import { useMutation } from "@apollo/client/react";
@@ -28,19 +28,26 @@ const DeleteTaskModal = ({open, handleClose, selectDeleteID, setOpenDelete}) => 
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose()
+            }}
             fullWidth
             sx={{opacity:"8 0%"}}
             >
-            <DialogTitle sx={{color:'#053348', fontWeight:'bold'}}>Delete Task</DialogTitle>
-            <DialogContent>
-                <Typography>Are you sure you want to delete this task?</Typography>
-            </DialogContent>
+            <Box sx={{padding:1.5}}>
+                <DialogTitle sx={{color:'#053348', fontWeight:'bold'}}>Delete Task</DialogTitle>
+                <DialogContent>
+                    <Typography>Are you sure you want to delete this task?</Typography>
+                </DialogContent>
 
-            <DialogActions>
-                <MyButton handler={handleClose} name="Cancel"/>
-                <MyButton handler={handleDeleteTask} name="Delete"/>
-            </DialogActions>
+                <DialogActions>
+                    <MyButton handler={handleClose} name="Cancel"/>
+                    <MyButton handler={handleDeleteTask} name="Delete"/>
+                </DialogActions>
+            </Box>
         </Dialog>
     );
 };

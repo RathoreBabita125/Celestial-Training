@@ -3,14 +3,14 @@ import { gql } from '@apollo/client';
 export const UPDATETASK = gql`
     mutation updateTask(
         $id:ID!
-        $title:String!
-        $description:String!
-        $status:String!
-        $priority:String!
-        $assignedTo:ID!
-        $projectId:ID!
-        $dueDate:Date!
-        $estimateDate:Date!
+        $title:String
+        $description:String
+        $status:String
+        $priority:String
+        $assignedTo:ID
+        $projectId:ID
+        $dueDate:Date
+        $estimateDate:Date
         ){
         updateTask(
             id:$id

@@ -27,10 +27,19 @@ const DeleteUser = ({ open, handleClose, setOpenDelete, deleteUser }) => {
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"30%"}}>
+        <Dialog 
+            open={open} 
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose();
+            }}
+            fullWidth 
+            maxWidth="sm">
             <Box sx={{ padding: 2 }}>
                 <DialogContent>
-                   <Typography variant="h6" color="initial">Are you sure? You want to delete this user.</Typography>
+                   <Typography variant="h6" color="initial" sx={{mb:1}}>Are you sure? You want to delete this user.</Typography>
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={() => setOpenDelete(false)} name="Cancel" />

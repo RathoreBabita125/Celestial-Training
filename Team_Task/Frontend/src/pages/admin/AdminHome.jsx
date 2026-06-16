@@ -19,7 +19,7 @@ const AdminHome = () => {
         return <LoadingCompo />
     }
 
-    const totalProject = projectData.projects.length;
+    const totalProject = projectData?.projects?.length;
     let completed = 0;
     let Ongoing = 0;
     let pending = 0;
@@ -59,7 +59,7 @@ const AdminHome = () => {
                 <Typography variant='h2' sx={{ fontWeight: 'bold', marginBottom: 7 }}>Welcome {userAuth.fullName}</Typography>
                 <Stack spacing={5}>
                     <Typography variant='h5'>Here are the details of your projects and tasks.</Typography>
-                    <Typography variant='h5' sx={{ fontWeight: 'bold' }}>Projects Details:</Typography>
+                    <Typography variant='h5' sx={{ fontWeight: 'bold' }}>Projects Details</Typography>
                     <Stack direction={'row'} spacing={5}>
                         <CardComp name="Total Projects" count={totalProject} />
                         <CardComp name="Completed Projects" count={completed} />
@@ -68,7 +68,7 @@ const AdminHome = () => {
                     </Stack>
                 </Stack>
                 <Box sx={{ marginTop: 10 }}>
-                    <Typography variant='h5' sx={{ fontWeight: 'bold', marginBottom: 5 }}>Employee Details:</Typography>
+                    <Typography variant='h5' sx={{ fontWeight: 'bold', marginBottom: 5 }}>Employee Details</Typography>
                     <Stack direction={'row'} spacing={5}>
                         <CardComp name="Total Employees" count={totalEmployee} />
                         <CardComp name="Admins" count={admin} />

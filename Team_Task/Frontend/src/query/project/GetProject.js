@@ -13,12 +13,14 @@ export const GETPROJECTS = gql`
             status:$status
             priority:$priority
         ){
-           id
+            id
             title
             description
             projectManager
+            projectManagerId
             engineers
             status
+            updatedAt
             priority
             startDate
             endDate

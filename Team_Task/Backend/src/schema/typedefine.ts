@@ -1,6 +1,6 @@
 import { gql } from "graphql-tag";
 
-export const typeDefs=gql`
+export const typeDefs = gql`
 
     enum UserStatus{
         ACTIVE
@@ -18,7 +18,7 @@ export const typeDefs=gql`
         phone:ID!
         status:UserStatus!
         createdAt:Date!
-        updatedAt:Date!
+        updatedAt:Date
         deletedAt:Date
     }
     type Project{
@@ -31,6 +31,8 @@ export const typeDefs=gql`
         priority:String!
         startDate:Date!
         endDate:Date!
+        updatedAt:Date
+        projectManagerId:String
         tasks:[Task]
     }
     type Task{
@@ -43,6 +45,7 @@ export const typeDefs=gql`
         project:Project
         dueDate:String
         estimateDate:String
+        updatedAt:Date
     }
     type AuthResponse{
         user:User
@@ -129,6 +132,7 @@ export const typeDefs=gql`
             title:String!
             description:String!
             projectManager:String!
+            projectManagerId:String
             engineers:[String!]
             status:String!
             priority:String!
@@ -137,13 +141,16 @@ export const typeDefs=gql`
         ):Project
 
         updateProject(
-            id:ID
+            id:ID!
             title:String
             description:String
+            projectManager: String
+            projectManagerId:String
+            engineers: [String]
             status:String
             priority:String
-            startDate:Date!
-            endDate:Date!
+            startDate:Date
+            endDate:Date    
         ):Project
 
         deleteProject(
@@ -163,16 +170,16 @@ export const typeDefs=gql`
 
         updateTask(
             id:ID!
-            title:String!
-            description:String!
-            status:String!
-            priority:String!
-            projectId:ID!
-            assignedTo:ID!
-            dueDate:Date!
-            estimateDate:Date!
+            title:String
+            description:String
+            status:String
+            priority:String
+            projectId:ID
+            assignedTo:ID
+            dueDate:Date
+            estimateDate:Date
         ):Task
-
+        
         deleteTask(
             id:ID!
         ):Task

@@ -26,7 +26,7 @@ const ManagerTasks = () => {
     const [openView, setOpenView] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [openEdit, setOpenEdit] = useState(false);
-    
+
     const { openFilter, setOpenFilter, handleCloseFilter, page, setPage, rowsPerPage, handleChangePage, handleChangeRowsPerPage } = useContext(FilterContext);
     const [filter, setFilter] = useState({
         title: '',
@@ -39,10 +39,9 @@ const ManagerTasks = () => {
         { label: "Task Name", value: "title" },
         { label: "Status", value: "status" },
         { label: "Priority", value: "priority" },
-        { label: "Engineer", value: "assignedTo" },
         { label: "Project", value: "project" },
     ];
-    const filterField=["title", "status", "priority", "assignedTo", "project"];
+    const filterField = ["title", "status", "priority", "project"];
 
     if (loading) {
         return <LoadingCompo />
@@ -57,14 +56,11 @@ const ManagerTasks = () => {
             : true;
         const matchPriority = filter.priority
             ? task.priority?.toLowerCase() === filter.priority.toLowerCase()
-            : true;
-        const matchEmployee = filter.assignedTo.fullName
-            ? task.assignedTo?.fullName?.toLowerCase().includes(filter.assignedTo.fullName?.toLowerCase())
-            : true;
+            : true
         const matchProject = filter.project.title
             ? task.project.title?.toLowerCase().includes(filter.project.title.toLowerCase())
             : true;
-        return matchTitle && matchStatus && matchPriority && matchEmployee && matchProject;
+        return matchTitle && matchStatus && matchPriority && matchProject;
     });
 
     const handleCloseOpenTask = () => {
@@ -173,11 +169,6 @@ const ManagerTasks = () => {
                                                             setSelectedTask(currTask);
                                                         }}
                                                     />
-                                                    <EditTaskModal
-                                                        open={openEdit}
-                                                        handleClose={handleCloseEdit}
-                                                        selectedTask={selectedTask}
-                                                    />
                                                     <DeleteForeverIcon
                                                         sx={{ fontSize: 25, cursor: 'pointer' }}
                                                         onClick={
@@ -187,23 +178,12 @@ const ManagerTasks = () => {
                                                             }
                                                         }
                                                     />
-                                                    <DeleteTaskModal
-                                                        open={openDelete}
-                                                        handleClose={handleCloseDelete}
-                                                        selectDeleteID={selectDeleteID}
-                                                        setOpenDelete={setOpenDelete}
-                                                    />
                                                     <RemoveRedEyeIcon
                                                         onClick={() => {
                                                             setSelectedTask(currTask);
                                                             setOpenView(true);
                                                         }}
                                                         sx={{ fontSize: 25, cursor: 'pointer' }}
-                                                    />
-                                                    <ViewTaskModal
-                                                        open={openView}
-                                                        handleClose={handleCloseView}
-                                                        selectedTask={selectedTask}
                                                     />
                                                 </Stack>
                                             </TableCell>
@@ -212,6 +192,22 @@ const ManagerTasks = () => {
                                 }
                             </TableBody>
                         </Table>
+                        <EditTaskModal
+                            open={openEdit}
+                            handleClose={handleCloseEdit}
+                            selectedTask={selectedTask}
+                        />
+                        <DeleteTaskModal
+                            open={openDelete}
+                            handleClose={handleCloseDelete}
+                            selectDeleteID={selectDeleteID}
+                            setOpenDelete={setOpenDelete}
+                        />
+                        <ViewTaskModal
+                            open={openView}
+                            handleClose={handleCloseView}
+                            selectedTask={selectedTask}
+                        />
                         <TablePagination
                             className='table-pagination'
                             component="div"

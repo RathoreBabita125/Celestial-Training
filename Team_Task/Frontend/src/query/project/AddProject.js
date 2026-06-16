@@ -5,6 +5,7 @@ export const CREATEPROJECT = gql`
         $title:String!
         $description:String!
         $projectManager:String!
+        $projectManagerId:String
         $engineers:[String!]
         $status:String!
         $priority:String!
@@ -15,6 +16,7 @@ export const CREATEPROJECT = gql`
             title:$title
             description:$description
             projectManager:$projectManager
+            projectManagerId:$projectManagerId
             engineers:$engineers
             status:$status
             priority:$priority
@@ -25,6 +27,7 @@ export const CREATEPROJECT = gql`
             title
             description
             projectManager
+            projectManagerId
             engineers
             status
             priority

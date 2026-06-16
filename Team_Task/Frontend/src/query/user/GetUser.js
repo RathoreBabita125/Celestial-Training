@@ -16,6 +16,7 @@ export const GETUSERS = gql`
             id
             fullName
             email
+            password
             role
             phone
             status

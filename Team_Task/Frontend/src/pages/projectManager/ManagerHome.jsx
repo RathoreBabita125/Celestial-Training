@@ -17,7 +17,7 @@ const ManagerHome = () => {
         return <LoadingCompo />
     }
 
-    const totalProject = projectData.projects.length;
+    const totalProject = projectData?.projects?.length;
     let completed = 0;
     let Ongoing = 0;
     let pending = 0;

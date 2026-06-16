@@ -15,12 +15,19 @@ export const projectResolvers = {
             if (projectData.priority) {
                 where.priority = projectData.priority;
             }
-            if (projectData.status) {
+            if (projectData.projectManager) {
                 where.projectManager = projectData.projectManager;
             }
-            return await projectRepo.find({ where })
+            return await projectRepo.find({
+                where,
+                relations: {
+                    tasks: true
+                },
+                order: {
+                    createdAt: "DESC"
+                }
+            })
         },
-
         getProjectDetails: async () => {
             const projectRepo = AppDataSource.getRepository(Project);
             return await projectRepo.find({

@@ -1,6 +1,5 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Stack, FormControl, FormLabel, Box, Typography, Button } from "@mui/material";
 import { useState } from "react";
-
 import { useMutation, useQuery } from "@apollo/client/react";
 import MyButton from "../../common/Button";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -21,6 +20,7 @@ const CreateProjectModal = ({ open, handleClose }) => {
     const [project, setProject] = useState({
         title: '',
         projectManager: '',
+        projectManagerId: '',
         engineers: [],
         description: '',
         status: '',
@@ -62,14 +62,14 @@ const CreateProjectModal = ({ open, handleClose }) => {
     // check validate
     const isValidProject =
         project?.title.trim() !== "" &&
-        project?.description.trim()!=="" &&
-        project?.status.trim()!=="" &&
-        project?.priority.trim()!==""&&
+        project?.description.trim() !== "" &&
+        project?.status.trim() !== "" &&
+        project?.priority.trim() !== "" &&
         project.engineers &&
-        project.projectManager.trim()!==""&&
+        project.projectManager.trim() !== "" &&
         project.startDate &&
         project.endDate
-        
+
     // handle create project click
     const handleCreateProject = async () => {
         const checkValidate = validateProjectInputs();
@@ -82,6 +82,7 @@ const CreateProjectModal = ({ open, handleClose }) => {
                     title: project.title,
                     description: project.description,
                     projectManager: project.projectManager,
+                    projectManagerId: project.projectManagerId,
                     engineers: project.engineers,
                     status: project.status,
                     priority: project.priority,
@@ -92,6 +93,7 @@ const CreateProjectModal = ({ open, handleClose }) => {
             setProject({
                 title: '',
                 projectManager: '',
+                projectManagerId: '',
                 engineers: [],
                 description: '',
                 status: '',
@@ -124,7 +126,16 @@ const CreateProjectModal = ({ open, handleClose }) => {
     });
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <Dialog
+            open={open}
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose()
+            }}
+            fullWidth
+            maxWidth="sm">
             <Box sx={{ padding: 2 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Create Project</DialogTitle>
                 <DialogContent>
@@ -163,10 +174,16 @@ const CreateProjectModal = ({ open, handleClose }) => {
                             <Select
                                 name="projectManager"
                                 value={project.projectManager}
-                                onChange={handleProjectInputs}
-                                required
-                                fontWeight
-                                displayEmpty
+                                onChange={(e) => {
+                                    const selectedUser = projectManagerUser.find(
+                                        (user) => user.fullName === e.target.value
+                                    );
+                                    setProject((prev) => ({
+                                        ...prev,
+                                        projectManager: e.target.value,
+                                        projectManagerId: selectedUser?.id  // ✅ id bhi save karo
+                                    }));
+                                }}
                             >
                                 <MenuItem value="" disabled>Select Propject Manager</MenuItem>
                                 {
@@ -310,10 +327,14 @@ const CreateProjectModal = ({ open, handleClose }) => {
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
-                    <Button onClick={handleCreateProject} disabled={!isValidProject} sx={{backgroundColor:'#053348', color:'white'}}>Create</Button>
+                    <Button
+                        onClick={handleCreateProject}
+                        disabled={!isValidProject}
+                        sx={{ backgroundColor: isValidProject ? '#053348' : '#E0E0E0', color: 'white' }}
+                    >Create</Button>
                 </DialogActions>
             </Box>
-        </Dialog>
+        </Dialog >
     );
 };
 export default CreateProjectModal

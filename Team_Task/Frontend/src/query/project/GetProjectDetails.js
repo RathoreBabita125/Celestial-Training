@@ -6,6 +6,7 @@ export const GETPROJECTDETAILS = gql`
             id
             title
             projectManager
+            projectManagerId
             endDate
             status
             priority

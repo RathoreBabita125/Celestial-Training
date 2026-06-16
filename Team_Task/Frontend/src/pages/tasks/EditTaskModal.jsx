@@ -101,7 +101,16 @@ const EditTaskModal = ({ open, handleClose, selectedTask }) => {
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <Dialog 
+            open={open} 
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose()
+            }}
+            fullWidth 
+            maxWidth="sm">
             <Box sx={{ padding: 2 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Edit Task</DialogTitle>
                 <DialogContent>
@@ -262,7 +271,7 @@ const EditTaskModal = ({ open, handleClose, selectedTask }) => {
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
                     <Button
-                        sx={{ backgroundColor: '#053348', color: 'white' }}
+                        sx={{ backgroundColor: isValidTask ? '#053348' : '#E0E0E0', color: 'white' }}
                         onClick={handleEditTask}
                         disabled={!isValidTask}
                     >Edit</Button>

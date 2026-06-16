@@ -12,8 +12,7 @@ export const addUserResolvers = {
 
             if (findUser) {
                 throw new Error(`You are already existed.`);
-            }
-            
+            }   
             const hashedPassword = await bcrypt.hash(userData.password, 10);
             const userRepo = AppDataSource.getRepository(User);
             const user = userRepo

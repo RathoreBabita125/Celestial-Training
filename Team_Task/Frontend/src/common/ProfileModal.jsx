@@ -12,8 +12,6 @@ const ProfileModal=({open, onclose, setOpenProfile})=>{
 
     const {userAuth} = useContext(AuthContext);
 
-    console.log(userAuth)
-
     const handleCloseBTN=()=>{
         setOpenProfile(false)
     }

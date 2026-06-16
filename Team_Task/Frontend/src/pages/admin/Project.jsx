@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import '../dashboard/Dashboard.css'
 import { useQuery } from '@apollo/client/react';
 import DeleteForeverIcon from '@mui/icons-material/Delete';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import CreateProjectModal from '../project/CreateProjectModal';
 import DeleteProjectModal from '../project/DeleteProjectModal';
 import ViewProjectModal from '../project/ViewProjectModal';
@@ -13,8 +13,9 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 import EditProjectModal from '../project/EditProjectModal';
 import LoadingCompo from '../../common/Loader';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import FilterProjectModal from '../project/FilterProjectModal';
 import { GETPROJECTS } from '../../query/project/GetProject';
+import Filter from '../filter/Filter';
+import { FilterContext } from '../../context/FilterContext';
 
 const Project = () => {
     const [openCreate, setOpenCreate] = useState(false);
@@ -23,55 +24,64 @@ const Project = () => {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedProject, setSelectedProject] = useState({});
     const [selectDeleteID, setSelectDeleteID] = useState(null);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [openFilter, setOpenFilter] = useState(false);
+    const {
+        openFilter,
+        setOpenFilter,
+        handleCloseFilter,
+        page,
+        setPage,
+        rowsPerPage,
+        handleChangePage,
+        handleChangeRowsPerPage } = useContext(FilterContext);
 
-    const [filters, setFilter] = useState({
+    const [filter, setFilter] = useState({
         title: '',
         status: '',
         priority: '',
         projectManager: ''
     })
-    const { loading, data } = useQuery(GETPROJECTS);
-
+    // const { loading, data:projectData } = useQuery(GETPROJECTS);
+    const { loading, data: projectData, error } = useQuery(GETPROJECTS);
+    console.log(projectData);
+    console.log("GETPROJECTS error:", error);
     if (loading) {
         return <LoadingCompo />
     }
+    console.log(projectData?.projects);
 
-    const filteredProjects = (data?.projects || []).filter((project) => {
-        const matchTitle = filters.title
-            ? project.title?.toLowerCase().includes(filters.title.toLowerCase())
+    const columnOptions = [
+        { label: "Project Name", value: "title" },
+        { label: "Status", value: "status" },
+        { label: "Priority", value: "priority" },
+        { label: "Project Manager", value: "projectManager" },
+    ];
+    const filterField = ["projectName", "status", "priority", "projectManager"]
+
+
+
+    const filteredProjects = (projectData?.projects || []).filter((project) => {
+        const matchTitle = filter.title
+            ? project.title?.toLowerCase().includes(filter.title.toLowerCase())
             : true;
-        const matchStatus = filters.status
-            ? project.status?.toLowerCase() === filters.status.toLowerCase()
+        const matchStatus = filter.status
+            ? project.status?.toLowerCase() === filter.status.toLowerCase()
             : true;
-        const matchPriority = filters.priority
-            ? project.priority?.toLowerCase() === filters.priority.toLowerCase()
+        const matchPriority = filter.priority
+            ? project.priority?.toLowerCase() === filter.priority.toLowerCase()
             : true;
-        const matchManager = filters.projectManager
-            ? project.projectManager?.toLowerCase().includes(filters.projectManager.toLowerCase())
+        const matchManager = filter.projectManager
+            ? project.projectManager?.toLowerCase().includes(filter.projectManager.toLowerCase())
             : true;
         return matchTitle && matchStatus && matchPriority && matchManager;
-    });
+    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     const paginatedProjects = filteredProjects
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
     const handleViewProject = (project) => {
         setSelectedProject(project);
         setOpenView(true);
     };
-    const handleCloseFilter = () => {
-        setOpenFilter(false);
-    }
     const handleCloseView = () => {
         setOpenView(false);
     };
@@ -81,14 +91,13 @@ const Project = () => {
     const handleCloseDelete = () => {
         setOpenDelete(false);
     };
-
     const handleCloseEdit = () => {
         setOpenEdit(false)
     }
     return (
         <>
             <Box className="project-section">
-                {!data?.project &&
+                {projectData?.projects &&
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
                         <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', color: '#053348' }}>All Project Details</Typography>
                         <Stack direction={'row'} spacing={3}>
@@ -103,13 +112,16 @@ const Project = () => {
                                 <FilterListIcon />
                                 Filter
                             </Button>
-                            <FilterProjectModal
+
+                            <Filter
                                 open={openFilter}
                                 onClose={handleCloseFilter}
-                                setFilter={setFilter}
-                                filters={filters}
-                                setPage={setPage}
                                 setOpenFilter={setOpenFilter}
+                                setFilter={setFilter}
+                                setPage={setPage}
+                                filter={filter}
+                                columnOptions={columnOptions}
+                                filterField={filterField}
                             />
                         </Stack>
                     </Box>
@@ -177,11 +189,6 @@ const Project = () => {
                                                             setSelectedProject(currProject);
                                                         }}
                                                     />
-                                                    <EditProjectModal
-                                                        open={openEdit}
-                                                        handleClose={handleCloseEdit}
-                                                        selectedProject={selectedProject}
-                                                    />
                                                     <DeleteForeverIcon
                                                         sx={{ fontSize: 25, cursor: 'pointer' }}
                                                         onClick={
@@ -191,20 +198,9 @@ const Project = () => {
                                                             }
                                                         }
                                                     />
-                                                    <DeleteProjectModal
-                                                        open={openDelete}
-                                                        handleClose={handleCloseDelete}
-                                                        selectDeleteID={selectDeleteID}
-                                                        setOpenDelete={setOpenDelete}
-                                                    />
                                                     <RemoveRedEyeIcon
                                                         onClick={() => handleViewProject(currProject)}
                                                         sx={{ fontSize: 25, cursor: 'pointer' }}
-                                                    />
-                                                    <ViewProjectModal
-                                                        open={openView}
-                                                        handleClose={handleCloseView}
-                                                        selectedProject={selectedProject}
                                                     />
                                                 </Stack>
                                             </TableCell>
@@ -213,6 +209,22 @@ const Project = () => {
                                 }
                             </TableBody>
                         </Table>
+                        <EditProjectModal
+                            open={openEdit}
+                            handleClose={handleCloseEdit}
+                            selectedProject={selectedProject}
+                        />
+                        <DeleteProjectModal
+                            open={openDelete}
+                            handleClose={handleCloseDelete}
+                            selectDeleteID={selectDeleteID}
+                            setOpenDelete={setOpenDelete}
+                        />
+                        <ViewProjectModal
+                            open={openView}
+                            handleClose={handleCloseView}
+                            selectedProject={selectedProject}
+                        />
                         <TablePagination
                             className='table-pagination'
                             component="div"
@@ -221,6 +233,7 @@ const Project = () => {
                             onPageChange={handleChangePage}
                             rowsPerPage={rowsPerPage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[10, 20, 30, 40]}
                             sx={{ color: '#053348', fontWeight: 'bold' }}
                         />
                     </TableContainer>

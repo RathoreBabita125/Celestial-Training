@@ -26,8 +26,12 @@ const DeleteProjectModal = ({open, handleClose, selectDeleteID, setOpenDelete}) 
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
-            sx={{opacity:"60%"}}
+            onClose={(event, reason)=>{
+                if(reason === "backdropClick" || reason === "escapeKeyDown"){
+                    return;
+                }
+                handleClose()
+            }} 
             fullWidth>
             <Box sx={{ padding: 2 }}>
                 <DialogTitle sx={{color:'#053348', fontWeight:'bold'}}>Delete Project</DialogTitle>

@@ -88,10 +88,17 @@ const CreateTaskModal = ({ open, handleClose }) => {
             toast.error(error.message);
         }
     }
-
-
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <Dialog 
+            open={open} 
+            fullWidth maxWidth="sm"
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose()
+            }}
+            >
             <Box sx={{ padding: 2 }}>
                 <DialogTitle sx={{ fontWeight: 'bold', fontSize: 25, color: '#053348' }}>Add Task</DialogTitle>
                 <DialogContent>
@@ -252,7 +259,7 @@ const CreateTaskModal = ({ open, handleClose }) => {
                 <DialogActions>
                     <MyButton handler={handleClose} name="Cancel" />
                     <Button
-                        sx={{ backgroundColor: '#053348', color: 'white' }}
+                        sx={{ backgroundColor: isValidTask ? '#053348' : '#E0E0E0', color: 'white' }}
                         onClick={addTaskHandler}
                         disabled={!isValidTask}
                     >Add</Button>

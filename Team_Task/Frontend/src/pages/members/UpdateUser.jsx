@@ -7,10 +7,11 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from "react-toastify";
 import { emailInputCheck, phoneInputCheck } from "../../constants/const";
 import { UPDATEUSER } from "../../query/user/EditUser";
+import { validateField } from "../../common/formFieldValidate";
 
 const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
-    const [updateUser]=useMutation(UPDATEUSER,{
-            refetchQueries:['getUsers']
+    const [updateUser] = useMutation(UPDATEUSER, {
+        refetchQueries: ['getUsers']
     });
     const [showVisible, setShowVisible] = useState(false);
     const [user, setUser] = useState({
@@ -20,11 +21,34 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
         role: '',
         phone: ''
     });
-    useEffect(()=>{
-        if(userEdit){
+    const [error, setError] = useState({
+        fullName: '',
+        email: '',
+        role: '',
+        password: '',
+        phone: ''
+    });
+    const isFormValid =
+        user?.email.trim() !== "" &&
+        emailInputCheck.test(user.email) &&
+        user?.password?.length >= 8 &&
+        user?.fullName != "" &&
+        user?.role !== "" &&
+        user?.phone != "" &&
+        phoneInputCheck.test(user.phone)
+
+    useEffect(() => {
+        if (userEdit) {
             setUser(userEdit)
         }
-    }, [userEdit])
+    }, [userEdit]);
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        const latestUser = { ...user, [name]: value };
+        const errorMsg = validateField(name, value, latestUser);
+        setError((prev) => ({ ...prev, [name]: errorMsg }));
+    };
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -32,11 +56,11 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
         setUser((preData) => ({ ...preData, [name]: value }));
     };
 
-    const handleUpdateUser = async() => {
+    const handleUpdateUser = async () => {
         try {
             const response = await updateUser({
                 variables: {
-                    id:user.id,
+                    id: user.id,
                     fullName: user.fullName,
                     email: user.email,
                     password: user.password,
@@ -44,10 +68,10 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                     phone: user.phone
                 }
             });
-            if(response){
+            if (response) {
                 toast.success("User has been updated successfully.");
                 setOPenUpdateUser(false);
-            }        
+            }
             setUser({
                 fullName: '',
                 email: '',
@@ -58,20 +82,21 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
         } catch (error) {
             toast.error(error.message);
         }
-    }   
-    const isFormValid =
-        user.email !== "" &&
-        emailInputCheck.test(user.email) &&
-        user.password !=="" &&
-        user.fullName !="" &&
-        user.role !=="" &&
-        user.phone !="" &&
-        phoneInputCheck.test(user.phone)
-
+    }
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" sx={{opacity:"30%"}}>
+        <Dialog
+            open={open}
+            fullWidth
+            maxWidth="sm"
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                handleClose();
+            }}  
+        >
             <Box sx={{ padding: 3 }}>
-                <DialogTitle sx={{ fontWeight: 'bold', fontSize: 22 }}>Update Existing User</DialogTitle>
+                <DialogTitle sx={{ fontWeight: 'bold', fontSize: 22, color:'#053348'}}>Update Existing User</DialogTitle>
                 <DialogContent>
                     <Stack direction={'column'} spacing={2} sx={{ mt: 1 }}>
                         <TextField
@@ -80,6 +105,9 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                             name="fullName"
                             value={user.fullName}
                             onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={error.fullName}
+                            helperText={error.fullName ? error.fullName : ''}
                             label="Full Name"
                             variant="outlined"
                             required
@@ -90,6 +118,9 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                             name="email"
                             value={user.email}
                             onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={error.email}
+                            helperText={error.email ? error.email : ''}
                             label="Email"
                             variant="outlined"
                             required
@@ -100,6 +131,9 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                             name="password"
                             value={user.password}
                             onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={error.password}
+                            helperText={error.password ? error.password : ''}
                             label="Password"
                             required
                             slotProps={{
@@ -122,6 +156,9 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                                 name="role"
                                 value={user.role}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={error.role}
+                                helperText={error.role ? error.role : ''}
                                 required
                                 displayEmpty
                                 label="Role *"
@@ -139,6 +176,9 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                             name="phone"
                             value={user.phone}
                             onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={error.phone}
+                            helperText={error.phone ? error.phone : ''}
                             label="Phone"
                             variant="outlined"
                             color="success"
@@ -147,7 +187,11 @@ const UpdateUser = ({ open, handleClose, setOPenUpdateUser, userEdit }) => {
                 </DialogContent>
                 <DialogActions>
                     <MyButton handler={() => setOPenUpdateUser(false)} name="Cancel" />
-                    <Button onClick={handleUpdateUser} disabled={!isFormValid} sx={{backgroundColor:'#053348', color:'white'}}>Update</Button>
+                    <Button
+                        onClick={handleUpdateUser}
+                        disabled={!isFormValid}
+                        sx={{ backgroundColor: isFormValid ? '#053348' : '#E0E0E0', color: 'white' }}
+                    >Update</Button>
                 </DialogActions>
             </Box>
         </Dialog>

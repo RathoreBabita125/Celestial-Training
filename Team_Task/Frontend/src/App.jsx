@@ -5,8 +5,6 @@ import Signup from './pages/login/Signup';
 import Signin from './pages/login/Signin';
 import Forget from './pages/login/Forget';
 import Dashboard from "./pages/dashboard/Dashboard";
-import Activity from "./pages/dashboard/Activity";
-import Message from "./pages/dashboard/Message";
 import Project from "./pages/admin/Project";
 import Team from "./pages/admin/Team";
 import Calender from "./pages/calender/Calender";
@@ -96,22 +94,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-          {
-            path: 'message',
-            element: (
-              <ProtectedRoute allowedRoles={['Admin', 'Project Manager', 'Engineer']}>
-                <Message />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: 'activity',
-            element: (
-              <ProtectedRoute allowedRoles={['Admin', 'Project Manager', 'Engineer']}>
-                <Activity />
-              </ProtectedRoute>
-            ),
-          },
         ]
       },
       {
@@ -129,7 +111,6 @@ const router = createBrowserRouter([
     ]
   }
 ]);
-
 function App() {
   return (
     <>

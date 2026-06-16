@@ -6,10 +6,17 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import Filter from "../filter/Filter";
 import { useContext, useState } from "react";
 import { FilterContext } from "../../context/FilterContext";
+import { AuthContext } from "../../context/AuthContext";
+import MyButton from "../../common/Button";
+import UpdateProjectStatusModal from "../project/StatusEditProject";
+import { GETPROJECTS } from "../../query/project/GetProject";
 
 const ManagerProjects = () => {
 
     const { loading: projectDetailsLoading, data: projectDetails } = useQuery(GETPROJECTDETAILS);
+    const { loading: projectLoading, data: projectData } = useQuery(GETPROJECTS);
+    
+    const { userAuth } = useContext(AuthContext)
     const { openFilter, setOpenFilter, handleCloseFilter, page, setPage, rowsPerPage, handleChangePage, handleChangeRowsPerPage } = useContext(FilterContext);
     const [filter, setFilter] = useState({
         title: '',
@@ -24,9 +31,22 @@ const ManagerProjects = () => {
         { label: "Priority", value: "priority" },
     ];
     const filterField = ["title", "projectManager", "Priority", "status"];
-    if (projectDetailsLoading) return <LoadingCompo />
+    const [openUpdateProject, setOpenUpdateProject] = useState(false);
 
-    const filteredTasks = (projectDetails.getProjectDetails).filter((detail) => {
+    if (projectDetailsLoading || projectLoading) return <LoadingCompo />
+
+    console.log(projectDetails);
+    console.log(projectData);
+    console.log(userAuth);
+
+    const myProjects=projectData?.projects?.filter((currProject)=>{
+        return currProject.projectManagerId===userAuth.id;
+    });
+
+    console.log(myProjects);
+    console.log(projectData.projects);
+
+    const filteredTasks = (myProjects || []).filter((detail) => {
         const matchTitle = filter.title
             ? detail.title?.toLowerCase().includes(filter.title.toLowerCase())
             : true;
@@ -48,8 +68,9 @@ const ManagerProjects = () => {
     return (
         <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
-                <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', color: '#053348' }}>Projects and Tasks Details</Typography>
+                <Typography variant="h4" color="initial" sx={{ fontWeight: 'bold', color: '#053348' }}>Project and Task Details</Typography>
                 <Stack direction={'row'} spacing={3}>
+                    <MyButton name="Update Project" handler={() => setOpenUpdateProject(true)} />
                     <Button sx={{ gap: 2, backgroundColor: '#053348', color: 'white' }}
                         onClick={() => setOpenFilter(true)}
                     >
@@ -73,32 +94,34 @@ const ManagerProjects = () => {
                     <TableRow className='dash-user-coloumn'>
                         <TableCell className='user-table-column' align='center'>Project ID</TableCell>
                         <TableCell className='user-table-column' align='center'>Project Name</TableCell>
-                        <TableCell className='user-table-column' align='center'>Project Manager</TableCell>
+                        <TableCell className='user-table-column' align='center'>Manager</TableCell>
+                        <TableCell className='user-table-column' align='center'>Status</TableCell>
                         <TableCell className='user-table-column' align='center'>Priority</TableCell>
                         <TableCell className='user-table-column' align='center'>Total Tasks</TableCell>
-                        <TableCell className='user-table-column' align='center'>Completed Tasks</TableCell>
-                        <TableCell className='user-table-column' align='center'>Active Tasks</TableCell>
+                        <TableCell className='user-table-column' align='center'>Completed</TableCell>
+                        <TableCell className='user-table-column' align='center'>Active</TableCell>
                         <TableCell className='user-table-column' align='center'>Deadline</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody className='project-table-body'>
                     {
                         paginatedProjects?.map((currProject) => {
-                            return <TableRow >
+                            return <TableRow  key={currProject.id}>
                                 <TableCell className='team-table-row' align='center'>{currProject.id} </TableCell>
                                 <TableCell className='team-table-row' align='center'>{currProject.title} </TableCell>
                                 <TableCell className='team-table-row' align='center'>{currProject.projectManager} </TableCell>
+                                <TableCell className='team-table-row' align='center'>{currProject.status} </TableCell>
                                 <TableCell className='team-table-row' align='center'>{currProject.priority} </TableCell>
-                                <TableCell className='team-table-row' align='center'>{currProject.tasks.length} </TableCell>
+                                <TableCell className='team-table-row' align='center'>{currProject?.tasks?.length} </TableCell>
                                 <TableCell className='team-table-row' align='center'>
-                                    {currProject.tasks.filter(
+                                    {currProject?.tasks?.filter(
                                         (currTask) => {
                                             return currTask.status === 'Completed'
                                         }
                                     ).length}
                                 </TableCell>
                                 <TableCell className='team-table-row' align='center'>
-                                    {currProject.tasks.filter(
+                                    {currProject?.tasks?.filter(
                                         (currTask) => {
                                             return currTask.status === 'In progress'
                                         }
@@ -110,6 +133,11 @@ const ManagerProjects = () => {
                     }
                 </TableBody>
             </Table>
+            <UpdateProjectStatusModal
+                open={openUpdateProject}
+                handleClose={() => setOpenUpdateProject(false)}
+                projectList={paginatedProjects} 
+            />
             <TablePagination
                 className='table-pagination'
                 component="div"
@@ -118,6 +146,7 @@ const ManagerProjects = () => {
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[10, 20, 30, 40]}
                 sx={{ color: '#053348', fontWeight: 'bold' }}
             />
         </Box>

@@ -5,7 +5,8 @@ import { Task } from "../../../models/Task";
 export const updateTaskResolvers = {
     Mutation: {
         updateTask: async (_: any, taskData: any) => {
-            const inputFields=["title", "description", "status", "priority", "projectId", "assignedTo"];
+            const allFields = ["title", "description", "status", "priority", "projectId", "assignedTo"];
+            const inputFields=allFields.filter((field)=>taskData[field]!==undefined);
             validateTaskInput(taskData, inputFields);
 
             if (!taskData.id) {

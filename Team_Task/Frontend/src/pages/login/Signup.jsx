@@ -102,7 +102,6 @@ const Signup = () => {
             toast.error(error.message);
         }
     };
-
     return (
         <>
             <Box className='register-section'>
@@ -141,7 +140,7 @@ const Signup = () => {
                                     color="success" />
                                 <TextField
                                     id="email" e
-                                    rror={error.email}
+                                    error={error.email}
                                     helperText={error.email ? error.email : ''}
                                     type="email" 
                                     onBlur={handleBlur} 
@@ -208,7 +207,8 @@ const Signup = () => {
                                         required 
                                         onBlur={handleBlur} 
                                         displayEmpty
-                                        error={error.role} l
+                                        error={error.role}
+                                        helperText={error.role ? error.role : ''}
                                         abel="Role *" 
                                         color="success">
                                         <MenuItem value="" disabled>Role *</MenuItem>

@@ -10,6 +10,7 @@ export const GETTASKS = gql`
             priority
             dueDate
             estimateDate
+            updatedAt
             assignedTo{
                 id
                 fullName

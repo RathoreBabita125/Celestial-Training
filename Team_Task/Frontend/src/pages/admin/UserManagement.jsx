@@ -44,7 +44,7 @@ const UserManagement = () => {
         { label: "Role", value: "role" },
         { label: "Status", value: "status" },
     ];
-    const filterField=["fullName","email","role","status"];
+    const filterField = ["fullName", "email", "role", "status"];
 
     if (loading) {
         return <LoadingCompo />
@@ -64,7 +64,7 @@ const UserManagement = () => {
             ? user.status?.toLowerCase().includes(filter.status.toLowerCase())
             : true;
         return matchName && matchEmail && matchRole && matchStatus;
-    });
+    })?.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     const paginatedUsers = filteredUsers
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -73,7 +73,7 @@ const UserManagement = () => {
     const handleCloseUser = () => {
         setOpenUser(false);
     };
-   
+
     const handleCloseUpdate = () => {
         setOPenUpdateUser(false)
     };
@@ -153,12 +153,6 @@ const UserManagement = () => {
                                                             setUserEdit(currUser)
                                                         }}
                                                     />
-                                                    <UpdateUser
-                                                        open={openUpdateUser}
-                                                        handleClose={handleCloseUpdate}
-                                                        setOPenUpdateUser={setOPenUpdateUser}
-                                                        userEdit={userEdit}
-                                                    />
                                                     <DeleteIcon
                                                         sx={{ cursor: 'pointer' }}
                                                         onClick={
@@ -168,12 +162,6 @@ const UserManagement = () => {
                                                             }
                                                         }
                                                     />
-                                                    <DeleteUser
-                                                        open={openDelete}
-                                                        handleClose={handleDeleteClose}
-                                                        setOpenDelete={setOpenDelete}
-                                                        deleteUser={deleteUser}
-                                                    />
                                                 </Stack>
                                             </TableCell>
                                         </TableRow>
@@ -182,6 +170,18 @@ const UserManagement = () => {
                                 }
                             </TableBody>
                         </Table>
+                        <UpdateUser
+                            open={openUpdateUser}
+                            handleClose={handleCloseUpdate}
+                            setOPenUpdateUser={setOPenUpdateUser}
+                            userEdit={userEdit}
+                        />
+                        <DeleteUser
+                            open={openDelete}
+                            handleClose={handleDeleteClose}
+                            setOpenDelete={setOpenDelete}
+                            deleteUser={deleteUser}
+                        />
                         <TablePagination
                             className='table-pagination'
                             component="div"
@@ -190,6 +190,7 @@ const UserManagement = () => {
                             onPageChange={handleChangePage}
                             rowsPerPage={rowsPerPage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[10, 20, 30, 40]}
                             sx={{ color: '#053348', fontWeight: 'bold' }}
                         />
                     </TableContainer>

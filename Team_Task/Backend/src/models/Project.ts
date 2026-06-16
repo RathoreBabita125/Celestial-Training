@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Task } from "./Task.ts";
 
 @Entity()
@@ -15,7 +15,7 @@ export class Project {
     @Column({ type: 'text' })
     projectManager!: string;
 
-    @Column({ type: 'text', array:true })
+    @Column({ type: 'text', array: true })
     engineers!: [string];
 
     @Column({ default: 'pending' })
@@ -30,6 +30,18 @@ export class Project {
     @Column({ type: 'date' })
     endDate!: Date
 
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
+
+    @DeleteDateColumn()
+    deletedAt!: Date;
+
+    @Column({ type: 'text', nullable:true})
+    projectManagerId!: string;
+
     @OneToMany(() => Task, (task) => task.project)
-    tasks: Task[] | undefined;
+    tasks!: Task[];
 };

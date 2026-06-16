@@ -13,6 +13,7 @@ export const addProjectResolvers = {
                 title: projectData.title,
                 description: projectData.description,
                 projectManager: projectData.projectManager,
+                projectManagerId: projectData.projectManagerId,
                 engineers: projectData.engineers,
                 status: projectData.status,
                 priority: projectData.priority,

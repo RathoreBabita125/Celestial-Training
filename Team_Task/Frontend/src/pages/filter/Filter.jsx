@@ -3,18 +3,21 @@ import MyButton from "../../common/Button";
 import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from "react";
 
-const Filter=({ open, onClose, setOpenFilter, setFilter, setPage, columnOptions, filterField })=>{
+const statusOption = ["Yet to be started", "In progress", "Completed", "Delivered", "Pending"];
+const priorityOption = ["Low", "Medium", "High"];
+const roleOption=["Admin","Project Manager", "Engineer"];
 
+const Filter = ({ open, onClose, setOpenFilter, setFilter, setPage, columnOptions, filterField }) => {
     const [column, setColumn] = useState("");
     const [inputValue, setInputValue] = useState("");
 
     const handleApply = () => {
         if (!column) return;
-        const resetInputField={};
-        filterField.forEach((field)=>resetInputField[field]="")
+        const resetInputField = {};
+        filterField.forEach((field) => resetInputField[field] = "")
         setFilter({
             ...resetInputField,
-            [column]: inputValue, 
+            [column]: inputValue,
         });
         setPage(0);
         setOpenFilter(false);
@@ -23,14 +26,93 @@ const Filter=({ open, onClose, setOpenFilter, setFilter, setPage, columnOptions,
     const handleReset = () => {
         setColumn("");
         setInputValue("");
-        const resetInputField={};
-        filterField.forEach((field)=>resetInputField[field]="");
+        const resetInputField = {};
+        filterField.forEach((field) => resetInputField[field] = "");
         setFilter(resetInputField)
         setPage(0);
     };
 
-    return(
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    const renderValueInput = () => {
+        if (column === "status") {
+            return (
+                <FormControl fullWidth margin="normal">
+                    <InputLabel color="success">Select Status</InputLabel>
+                    <Select
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        label="Select Status"
+                        color="success"
+                    >
+                        <MenuItem value="" disabled>Select Status</MenuItem>
+                        {statusOption.map((opt) => (
+                            <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            );
+        }
+
+        if (column === "priority") {
+            return (
+                <FormControl fullWidth margin="normal">
+                    <InputLabel color="success">Select Priority</InputLabel>
+                    <Select
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        label="Select Priority"
+                        color="success"
+                    >
+                        <MenuItem value="" disabled>Select Priority</MenuItem>
+                        {priorityOption.map((opt) => (
+                            <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            );
+        }
+        if (column === "role") {
+            return (
+                <FormControl fullWidth margin="normal">
+                    <InputLabel color="success">Select Role</InputLabel>
+                    <Select
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        label="Select Role"
+                        color="success"
+                    >
+                        <MenuItem value="" disabled>Select Role</MenuItem>
+                        {roleOption.map((opt) => (
+                            <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            );
+        }
+        return (
+            <TextField
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                label="Enter filter value"
+                fullWidth
+                margin="normal"
+                color="success"
+                disabled={!column}
+            />
+        );
+    };
+
+    return (
+        <Dialog
+            open={open}
+            onClose={(event, reason) => {
+                if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                    return;
+                }
+                onClose();
+            }}
+            fullWidth
+            maxWidth="sm"
+        >
             <Box sx={{ padding: 1 }}>
                 <Box sx={{
                     display: "flex", justifyContent: "space-between",
@@ -56,16 +138,7 @@ const Filter=({ open, onClose, setOpenFilter, setFilter, setPage, columnOptions,
                             ))}
                         </Select>
                     </FormControl>
-                   
-                    <TextField
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        label="Enter filter value"
-                        fullWidth
-                        margin="normal"
-                        color="success"
-                        disabled={!column}
-                    />
+                    {renderValueInput()}
                 </DialogContent>
                 <DialogActions>
                     <MyButton name="Reset Filter" handler={handleReset} />
