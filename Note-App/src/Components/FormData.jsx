@@ -1,7 +1,7 @@
 const FormData = ({title, setTitle, detail, setDetail, note, setNote}) => {
 
     const submitHandler = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const notedetail = {
             title: title,
             detail: detail
@@ -34,7 +34,6 @@ const FormData = ({title, setTitle, detail, setDetail, note, setNote}) => {
                             placeholder="Write your notes here"
                             value={detail}
                             onChange={(e) => setDetail(e.target.value)}
-
                         ></textarea>
                         <button
                             className="border-2 w-full p-4 bg-white text-black text-xl font-serif leading-tight hover:scale-y-90 cursor-pointer outline-none"
@@ -45,5 +44,4 @@ const FormData = ({title, setTitle, detail, setDetail, note, setNote}) => {
         </>
     )
 }
-
-export default FormData
+export default FormData;
