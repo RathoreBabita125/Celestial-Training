@@ -4,15 +4,12 @@ import { getComment } from "../api/comment_api";
 export const CommentContext = createContext()
 
 export const CommentProvider = ({ children }) => {
-
     const [myComments, setMyComments] = useState([])
-
     const [newComment, setNewComment] = useState({
         name: '',
         email: '',
         body: ''
     })
-
     const [updateComment, setUpdateComment] = useState({})
 
     const getCommentData = async () => {
@@ -44,8 +41,4 @@ export const CommentProvider = ({ children }) => {
             {children}
         </CommentContext.Provider>
     )
-
 }
-
-
-

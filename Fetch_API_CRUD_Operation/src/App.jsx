@@ -1,12 +1,10 @@
 import CommentsCompo from "./components/Comment"
 
 function App() {
-  
   return (
     <>
-    <CommentsCompo/>
+      <CommentsCompo/>
     </>
   )
 }
-
 export default App

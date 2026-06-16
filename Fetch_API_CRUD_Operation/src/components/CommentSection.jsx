@@ -18,35 +18,32 @@ const CommentSection = () => {
         setUpdateComment(currComment)
     }
 
-
-
     return (
-        <>
-            <section className="flex justify-center items-center px-4 py-10">
-                <ol className="list-decimal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl text-white">
-                    {myComments.map((currComment) => {
-                        return (
-                            <li key={currComment.id} className="flex rounded-xl bg-gray-700 shadow-2xl p-4 w-full">
-                                <div className="w-full min-h-300px flex flex-col gap-4 p-2">
-
-                                    <p className="font-bold text-lg sm:text-2xl wrap-break-word">{currComment.name}</p>
-
-                                    <p className="text-green-300 font-semibold text-sm sm:text-base wrap-break-word">{currComment.email}</p>
-
-                                    <p className="text-gray-300 text-sm sm:text-[15px] wrap-break-word flex-1">{currComment.body}</p>
-
-                                    <div className="flex flex-col sm:flex-row gap-3 mt-2 justify-center items-center">
-                                        <button className="form-button bg-green-700 px-4 py-2 rounded-md w-full sm:w-auto"onClick={() => handleEditButton(currComment)}>Edit</button>
-                                        <button className="form-button bg-red-700 px-4 py-2 rounded-md w-full sm:w-auto"onClick={() => deleteCommentData(currComment)}>Delete</button>
-                                    </div>
+        <section className="flex justify-center items-center px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+            <ol className="list-decimal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 w-full max-w-7xl text-white">
+                {myComments.map((currComment) => {
+                    return (
+                        <li key={currComment.id} className="flex rounded-xl bg-gray-700 shadow-2xl p-4 sm:p-5 md:p-6 w-full">
+                            <div className="w-full min-h-[220px] sm:min-h-[260px] flex flex-col gap-3 sm:gap-4">
+                                <p className="font-bold text-lg sm:text-xl md:text-2xl break-words">{currComment.name}</p>
+                                <p className="text-green-300 font-semibold text-sm sm:text-base break-words">{currComment.email}</p>
+                                <p className="text-gray-300 text-sm sm:text-base break-words flex-1">{currComment.body}</p>
+                                <div className="flex flex-col sm:flex-row gap-3 mt-2 justify-center items-center">
+                                    <button
+                                        className="form-button bg-green-700 px-4 py-2 rounded-md w-full sm:w-auto"
+                                        onClick={() => handleEditButton(currComment)}
+                                    >Edit</button>
+                                    <button
+                                        className="form-button bg-red-700 px-4 py-2 rounded-md w-full sm:w-auto"
+                                        onClick={() => deleteCommentData(currComment)}
+                                    >Delete</button>
                                 </div>
-                            </li>
-                        );
-                    })}
-                </ol>
-            </section>
-        </>
-    )
+                            </div>
+                        </li>
+                    );
+                })}
+            </ol>
+        </section>
+    );
 }
-
 export default CommentSection;

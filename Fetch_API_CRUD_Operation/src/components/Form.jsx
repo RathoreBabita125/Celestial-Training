@@ -4,13 +4,11 @@ import { CommentContext } from "../context/comment_context.jsx"
 
 const Form = () => {
 
-     const {myComments,setMyComments,newComment,setNewComment, updateComment, setUpdateComment}=useContext(CommentContext)
+    const {myComments,setMyComments,newComment,setNewComment, updateComment, setUpdateComment}=useContext(CommentContext)
     
-
     const handleSubmitButton = async (e) => {
         e.preventDefault()
         const action = e.nativeEvent.submitter.value
-
         if (action === 'Add Comment') {
             addCommentData()
         }
@@ -19,11 +17,9 @@ const Form = () => {
         }
     }
 
-    
     const handleInputButton = (e) => {
         const name = e.target.name
         const value = e.target.value
-
         return setNewComment((pre) => {
             return { ...pre, [name]: value }
         })
@@ -31,10 +27,8 @@ const Form = () => {
 
     const isEmptyEditComment = Object.keys(updateComment).length == 0
 
-    const editCommentData = () => {
-
-        const comment = editComment(updateComment.id, newComment)
-
+    const editCommentData = async() => {
+        const comment = await editComment(updateComment.id, newComment)
         if (comment.status === 200) {
             setMyComments((pre) => {
                 return pre.map((currComment) => {
@@ -42,36 +36,31 @@ const Form = () => {
                 })
             })
         }
-
         setUpdateComment({})
-
         setNewComment({
             name: '',
             email: '',
             body: ''
         })
-
     }
 
-     const addCommentData = async () => {
-            try {
-                const comment = postComment(newComment)
-                setMyComments([...myComments, comment.data])
-                setNewComment({
-                    name: '',
-                    email: '',
-                    body: ''
-                })
-            } catch (error) {
-                console.log("something went wrong", error);
-            }
+    const addCommentData = async () => {
+        try {
+            const comment = await postComment(newComment)
+            setMyComments([...myComments, comment.data])
+            setNewComment({
+                name: '',
+                email: '',
+                body: ''
+            })
+        } catch (error) {
+            console.log("something went wrong", error);
         }
-    
-
+    }
 
     return (
         <>
-            <section className='w-full h-full flex justify-center items-center'>
+            <section className='w-full flex justify-center px-4 py-8 sm:py-10'>
                 <form className='md:w-[55vw] md:h-[10vh]  p-3 rounded-xl' onSubmit={handleSubmitButton}>
                     <div className='flex flex-wrap gap-5'>
                         <input type="text"
